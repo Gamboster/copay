@@ -55,6 +55,7 @@ import { TxDetailsPage } from '../pages/tx-details/tx-details';
 import { TxpDetailsPage } from '../pages/txp-details/txp-details';
 import { WalletBalancePage } from '../pages/wallet-details/wallet-balance/wallet-balance';
 import { WalletDetailsPage } from '../pages/wallet-details/wallet-details';
+import { SlideToAcceptPage } from '../pages/slide-to-accept/slide-to-accept';
 
 // Integrations: Amazon
 import { AmazonPage } from '../pages/integrations/amazon/amazon';
@@ -319,6 +320,7 @@ export function createTranslateLoader(http: HttpClient) {
     WalletActivityPage,
     WalletSelectorPage,
     CardItemPage,
+    SlideToAcceptPage,
     /* Directives */
     CopyToClipboard,
     LongPress,
@@ -451,7 +453,8 @@ export function createTranslateLoader(http: HttpClient) {
     WalletItemPage,
     WalletActivityPage,
     WalletSelectorPage,
-    CardItemPage
+    CardItemPage,
+    SlideToAcceptPage
   ],
   providers: [
     AddressProvider,
