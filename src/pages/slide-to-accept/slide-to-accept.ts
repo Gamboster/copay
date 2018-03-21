@@ -58,10 +58,21 @@ export class SlideToAcceptPage implements AfterViewInit {
         top: buttonConstraints.top,
         width: buttonConstraints.width
       };
+<<<<<<< HEAD
       this.containerWidth = this.htmlContainerElem.clientWidth;
       const subtract = this.containerWidth < 800 ? 75 : 200;
       this.xMax = this.containerWidth - subtract;
     }, 0);
+=======
+      let containerWidth: number = this.htmlContainerElem.clientWidth;
+      const subtract = containerWidth < 800 ? 75 : 200;
+      this.xMax = containerWidth - subtract;
+      console.log('delta: ', this.delta);
+      console.log('Button width: ', origin.width);
+      console.log('Container width: ', containerWidth);
+      console.log('xMax: ', this.xMax);
+    }, 300);
+>>>>>>> Styles for slide and some functionality fixes
   }
 
   activateButton(event: TouchEvent) {

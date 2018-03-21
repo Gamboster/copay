@@ -1,5 +1,6 @@
 <div #slideButtonContainer class="slide__listener" no-margin no-padding>
   <button class="button-slider" #slideButton ion-button icon-right large (touchstart)="activateButton($event)" (touchmove)="dragButton($event)"
+<<<<<<< HEAD
     (touchend)="resetButton()" [disabled]="disabled" *ngIf="!isConfirm">
     <div class="slide__bitcoin" [ngStyle]="bitcoinStyle">
       <img src="assets/img/icon-bitcoin-white.svg">
@@ -13,5 +14,20 @@
   </div>
   <div class="slide__status-text" [ngClass]="{'enter': isConfirm}" *ngIf="isConfirm">
     <img src="assets/img/spinner.png">
+=======
+    (touchend)="resetButton()" (mousedown)="activateButton($event)" (mousemove)="dragButton($event)" (mouseup)="resetButton()"
+    [disabled]="slideButtonDisabled || slideButtonDone">
+    <div class="slide__bitcoin" [ngStyle]="bitcoinStyle">
+      <img src="../assets/img/icon-bitcoin-white.svg">
+    </div>
+
+  </button>
+  <div class="slide__button-text" [ngStyle]="textStyle">
+    <span class="justify">Slide to send</span>
+  </div>
+
+  <div class="slide__arrow">
+    <img src="../assets/img/icon-arrow-right.svg">
+>>>>>>> Styles for slide and some functionality fixes
   </div>
 </div>
