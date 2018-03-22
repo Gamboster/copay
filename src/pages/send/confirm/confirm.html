@@ -72,10 +72,8 @@
 
       <div class="wallet" *ngIf="tx.recipientType == 'wallet'">
         <ion-icon item-start>
-          <img *ngIf="tx.network == 'testnet'" [ngStyle]="{'background-color': tx.color}" src="assets/img/icon-wallet-testnet.svg"
-            class="icon-wallet" />
-          <img *ngIf="tx.network != 'testnet'" [ngStyle]="{'background-color': tx.color}" src="assets/img/icon-wallet.svg" class="icon-wallet"
-          />
+          <img *ngIf="tx.network == 'testnet'" [ngStyle]="{'background-color': tx.color}" src="assets/img/icon-wallet-testnet.svg" class="icon-wallet" />
+          <img *ngIf="tx.network != 'testnet'" [ngStyle]="{'background-color': tx.color}" src="assets/img/icon-wallet.svg" class="icon-wallet" />
         </ion-icon>
         <div class="ellipsis" copy-to-clipboard="{{ tx.origToAddress }}">
           <!--TODO: <contact ng-if="tx.origToAddress && !tx.name" address="{{tx.origToAddress}}"></contact>-->
@@ -99,10 +97,8 @@
       <span translate>From</span>
       <div class="wallet" *ngIf="wallet">
         <ion-icon item-start>
-          <img *ngIf="wallet.network == 'testnet'" [ngStyle]="{'background-color': wallet.color}" src="assets/img/icon-wallet-testnet.svg"
-            class="icon-wallet" />
-          <img *ngIf="wallet.network != 'testnet'" [ngStyle]="{'background-color': wallet.color}" src="assets/img/icon-wallet.svg"
-            class="icon-wallet" />
+          <img *ngIf="wallet.network == 'testnet'" [ngStyle]="{'background-color': wallet.color}" src="assets/img/icon-wallet-testnet.svg" class="icon-wallet" />
+          <img *ngIf="wallet.network != 'testnet'" [ngStyle]="{'background-color': wallet.color}" src="assets/img/icon-wallet.svg" class="icon-wallet" />
         </ion-icon>
         <div>{{wallet.name}}</div>
       </div>
@@ -122,8 +118,11 @@
       </div>
     </button>
   </ion-list>
+
+
 </ion-content>
 
 <ion-footer>
-  <button ion-button full class="button-footer" (click)="approve(tx, wallet)" [disabled]="!wallet || noWalletMessage || critialError || !tx.txp[wallet.id]">{{buttonText}}</button>
+  <page-slide-to-accept #slideButton *ngIf="!isCordova" disabled="{{!wallet || noWalletMessage || criticalError }}" buttonText="{{buttonText}}" (slideDone)="approve(tx, wallet)"></page-slide-to-accept>
+  <button *ngIf="isCordova" ion-button full class="button-footer" (click)="approve(tx, wallet)" [disabled]="!wallet || noWalletMessage || criticalError || !tx.txp[wallet.id]">{{buttonText}}</button>
 </ion-footer>
