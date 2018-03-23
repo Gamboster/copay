@@ -103,7 +103,7 @@ export class SlideToAcceptPage implements AfterViewInit {
     if (!this.slideButtonDone || this.isDisabled) {
       this.isConfirm = false;
       // Reset state variables
-      //this.isPressed = false;
+      
       // Resets button position
       let posCss = {
         "transform": "translateX(0px)",

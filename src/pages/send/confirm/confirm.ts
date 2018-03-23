@@ -90,7 +90,12 @@ export class ConfirmPage {
     this.isCordova = this.platformProvider.isCordova;
   }
 
+  ionViewWillLeave() {
+    this.navCtrl.swipeBackEnabled = true;
+  }
+
   ionViewWillEnter() {
+    this.navCtrl.swipeBackEnabled = false;
     let B = this.navParams.data.coin == 'bch' ? this.bitcoreCash : this.bitcore;
     let networkName;
     try {
