@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Events, ModalController, NavController, NavParams } from 'ionic-angular';
 import * as _ from 'lodash';
 import { Logger } from '../../../../providers/logger/logger';
@@ -21,6 +21,7 @@ import { WalletProvider } from '../../../../providers/wallet/wallet';
   templateUrl: 'sell-glidera.html',
 })
 export class SellGlideraPage {
+  @ViewChild('slideButton') slideButton;
 
   public isCordova: boolean;
   public token: string;
@@ -54,7 +55,12 @@ export class SellGlideraPage {
     this.isCordova = this.platformProvider.isCordova;
   }
 
+  ionViewWillLeave() {
+    this.navCtrl.swipeBackEnabled = true;
+  }
+
   ionViewWillEnter() {
+    this.navCtrl.swipeBackEnabled = false;
 
     this.isFiat = this.navParams.data.currency != 'BTC' ? true : false;
     this.amount = this.navParams.data.amount;
@@ -77,6 +83,7 @@ export class SellGlideraPage {
   }
 
   private showErrorAndBack(err: any): void {
+    this.slideButton.isConfirmed(false);
     this.logger.error(err);
     err = err.errors ? err.errors[0].message : err;
     this.popupProvider.ionicAlert('Error', err).then(() => {
@@ -85,6 +92,7 @@ export class SellGlideraPage {
   }
 
   private showError(err: any): void {
+    this.slideButton.isConfirmed(false);
     this.logger.error(err);
     err = err.errors ? err.errors[0].message : err;
     this.popupProvider.ionicAlert('Error', err);
@@ -142,7 +150,10 @@ export class SellGlideraPage {
     let okText = 'Confirm';
     let cancelText = 'Cancel';
     this.popupProvider.ionicConfirm(null, message, okText, cancelText).then((ok) => {
-      if (!ok) return;
+      if (!ok) {
+        this.slideButton.isConfirmed(false);
+        return;
+      }
       this.onGoingProcessProvider.set('sellingBitcoin');
       this.glideraProvider.get2faCode(this.token, (err, tfa) => {
         if (err) {

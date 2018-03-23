@@ -25,8 +25,8 @@
         <div>Receive in</div>
         <div class="wallet">
           <ion-icon item-start>
-          <img *ngIf="network == 'testnet'" [ngStyle]="{'background-color': wallet && wallet.color}" src="assets/img/icon-wallet-testnet.svg" class="icon-wallet" />
-          <img *ngIf="network != 'testnet'" [ngStyle]="{'background-color': wallet && wallet.color}" src="assets/img/icon-wallet.svg" class="icon-wallet" />
+            <img *ngIf="network == 'testnet'" [ngStyle]="{'background-color': wallet && wallet.color}" src="assets/img/icon-wallet-testnet.svg" class="icon-wallet" />
+            <img *ngIf="network != 'testnet'" [ngStyle]="{'background-color': wallet && wallet.color}" src="assets/img/icon-wallet.svg" class="icon-wallet" />
           </ion-icon>
           <div>{{wallet ? wallet.name : '...'}}</div>
         </div>
@@ -57,5 +57,6 @@
 </ion-content>
 
 <ion-footer>
-  <button ion-button full class="button-footer" (click)="buyConfirm()" [disabled]="!wallet">Confirm purchase</button>
+  <page-slide-to-accept #slideButton *ngIf="isCordova" [disabled]="!wallet" buttonText="Confirm purchase" (slideDone)="buyConfirm()"></page-slide-to-accept>
+  <button *ngIf="!isCordova" ion-button full class="button-footer" (click)="buyConfirm()" [disabled]="!wallet">Confirm purchase</button>
 </ion-footer>

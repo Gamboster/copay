@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Events, ModalController, NavController, NavParams } from 'ionic-angular';
 import * as _ from 'lodash';
@@ -19,6 +19,7 @@ import { EmailNotificationsProvider } from '../../../../providers/email-notifica
 import { ExternalLinkProvider } from '../../../../providers/external-link/external-link';
 import { OnGoingProcessProvider } from "../../../../providers/on-going-process/on-going-process";
 import { PayproProvider } from '../../../../providers/paypro/paypro';
+import { PlatformProvider } from '../../../../providers/platform/platform';
 import { PopupProvider } from '../../../../providers/popup/popup';
 import { ProfileProvider } from '../../../../providers/profile/profile';
 import { TxFormatProvider } from '../../../../providers/tx-format/tx-format';
@@ -29,6 +30,7 @@ import { WalletProvider } from '../../../../providers/wallet/wallet';
   templateUrl: 'buy-amazon.html',
 })
 export class BuyAmazonPage {
+  @ViewChild('slideButton') slideButton;
 
   private bitcoreCash: any;
   private amount: number;
@@ -52,6 +54,9 @@ export class BuyAmazonPage {
   public network: string;
   public walletSelectorTitle: string;
 
+  // Platform info
+  public isCordova: boolean;
+
   constructor(
     private amazonProvider: AmazonProvider,
     private bwcErrorProvider: BwcErrorProvider,
@@ -70,12 +75,18 @@ export class BuyAmazonPage {
     private txFormatProvider: TxFormatProvider,
     private walletProvider: WalletProvider,
     private translate: TranslateService,
-    private payproProvider: PayproProvider
+    private payproProvider: PayproProvider,
+    private platformProvider: PlatformProvider,
   ) {
     this.FEE_TOO_HIGH_LIMIT_PER = 15;
     this.configWallet = this.configProvider.get().wallet;
     this.amazonGiftCard = null;
     this.bitcoreCash = this.bwcProvider.getBitcoreCash();
+    this.isCordova = this.platformProvider.isCordova;
+  }
+
+  ionViewWillLeave() {
+    this.navCtrl.swipeBackEnabled = true;
   }
 
   ionViewDidLoad() {
@@ -83,6 +94,7 @@ export class BuyAmazonPage {
   }
 
   ionViewWillEnter() {
+    this.navCtrl.swipeBackEnabled = false;
     this.amount = this.navParams.data.amount;
     this.currency = this.navParams.data.currency;
 
@@ -127,6 +139,7 @@ export class BuyAmazonPage {
   }
 
   private showErrorAndBack(title: string, msg: any) {
+    this.slideButton.isConfirmed(false);
     title = title ? title : this.translate.instant('Error');
     this.logger.error(msg);
     msg = (msg && msg.errors) ? msg.errors[0].message : msg;
@@ -137,6 +150,7 @@ export class BuyAmazonPage {
 
   private showError = function (title: string, msg: any): Promise<any> {
     return new Promise((resolve, reject) => {
+      this.slideButton.isConfirmed(false);
       title = title || this.translate.instant('Error');
       this.logger.error(msg);
       msg = (msg && msg.errors) ? msg.errors[0].message : msg;
@@ -425,6 +439,7 @@ export class BuyAmazonPage {
     let cancelText = this.translate.instant('Cancel');
     this.popupProvider.ionicConfirm(title, this.message, okText, cancelText).then((ok) => {
       if (!ok) {
+        this.slideButton.isConfirmed(false);
         return;
       }
 

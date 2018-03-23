@@ -51,8 +51,7 @@
 
       <ion-item *ngIf="selectedPriceSensitivity">
         <div>
-          Coinbase has not yet implemented an immediate method to sell bitcoin from a wallet. To make this sale, funds will be sent
-          to your Coinbase account, and sold when Coinbase accepts the transaction (usually one hour).
+          Coinbase has not yet implemented an immediate method to sell bitcoin from a wallet. To make this sale, funds will be sent to your Coinbase account, and sold when Coinbase accepts the transaction (usually one hour).
         </div>
         <div *ngIf="sellRequestInfo">
           Estimated sale value:
@@ -63,8 +62,7 @@
         <div *ngIf="sellRequestInfo">
           Still sell if price fall until:
           <strong>
-            {{(sellRequestInfo.total.amount - (selectedPriceSensitivity.data.value / 100) * sellRequestInfo.total.amount) | currency
-            : '' : 2}} {{sellRequestInfo.total.currency}}
+            {{(sellRequestInfo.total.amount - (selectedPriceSensitivity.data.value / 100) * sellRequestInfo.total.amount) | currency : '' : 2}} {{sellRequestInfo.total.currency}}
           </strong>
         </div>
       </ion-item>
@@ -98,5 +96,6 @@
 </ion-content>
 
 <ion-footer>
-  <button ion-button full class="button-footer" (click)="sellConfirm()" [disabled]="!selectedPaymentMethodId || !sellRequestInfo || !wallet">Confirm sale</button>
+  <page-slide-to-accept #slideButton *ngIf="isCordova" [disabled]="!selectedPaymentMethodId || !sellRequestInfo || !wallet" buttonText="Confirm sale" (slideDone)="sellConfirm()"></page-slide-to-accept>
+  <button *ngIf="!isCordova" ion-button full class="button-footer" (click)="sellConfirm()" [disabled]="!selectedPaymentMethodId || !sellRequestInfo || !wallet">Confirm sale</button>
 </ion-footer>
