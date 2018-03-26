@@ -33,7 +33,6 @@ export class PaperWalletPage {
   public passphrase: string;
   public privateKey: string;
   public balanceSat: number;
-  public singleWallet: boolean;
   public noMatchingWallet: boolean;
   public balanceHidden: boolean;
   public error: boolean;
@@ -74,7 +73,10 @@ export class PaperWalletPage {
       onlyComplete: true,
       network: 'livenet',
     });
-    this.singleWallet = this.wallets.length == 1;
+
+    this.wallets = _.filter(_.clone(this.wallets), (wallet: any) => {
+      return !wallet.needsBackup;
+    });
 
     if (!this.wallets || !this.wallets.length) {
       this.noMatchingWallet = true;
