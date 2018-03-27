@@ -43,7 +43,10 @@ export class SlideToAcceptPage implements AfterViewInit {
   private done: boolean = false;
   private isDisabled: boolean = false;
 
+  public animation: boolean;
+
   constructor(public navCtrl: NavController, public navParams: NavParams, public renderer: Renderer) {
+    this.animation = false;
   }
 
   ngAfterViewInit() {
@@ -103,7 +106,7 @@ export class SlideToAcceptPage implements AfterViewInit {
     if (!this.slideButtonDone || this.isDisabled) {
       this.isConfirm = false;
       // Reset state variables
-      
+
       // Resets button position
       let posCss = {
         "transform": "translateX(0px)",
@@ -129,6 +132,14 @@ export class SlideToAcceptPage implements AfterViewInit {
     if (!boolean) {
       this.resetButton();
     }
+  }
+
+  public toggleAnimation(): void {
+    if (this.isDisabled) return;
+    this.animation = true;
+    setTimeout(() => {
+      this.animation = false;
+    }, 300);
   }
 
 }
