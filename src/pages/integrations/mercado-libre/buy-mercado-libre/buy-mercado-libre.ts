@@ -8,7 +8,6 @@ import { Logger } from '../../../../providers/logger/logger';
 // Pages
 import { FinishModalPage } from '../../../finish/finish';
 import { FeeWarningPage } from '../../../send/fee-warning/fee-warning';
-import { MercadoLibrePage } from '../mercado-libre';
 
 // Provider
 import { BwcErrorProvider } from '../../../../providers/bwc-error/bwc-error';
@@ -472,10 +471,10 @@ export class BuyMercadoLibrePage {
     modal.onDidDismiss(() => {
       this.navCtrl.popToRoot({ animate: false }).then(() => {
         this.navCtrl.parent.select(0);
-        
+
         // Fixes mobile navigation
         setTimeout(() => {
-          this.navCtrl.push(MercadoLibrePage, { invoiceId: this.invoiceId }, { animate: false });
+          this.navCtrl.push('MercadoLibrePage', { invoiceId: this.invoiceId }, { animate: false });
         }, 200);
       });
     });

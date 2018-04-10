@@ -6,13 +6,9 @@ import { Logger } from '../../providers/logger/logger';
 // Pages
 import { AddPage } from "../add/add";
 import { CopayersPage } from '../add/copayers/copayers';
-import { AmazonPage } from '../integrations/amazon/amazon';
 import { BitPayCardPage } from '../integrations/bitpay-card/bitpay-card';
 import { BitPayCardIntroPage } from '../integrations/bitpay-card/bitpay-card-intro/bitpay-card-intro';
-import { CoinbasePage } from '../integrations/coinbase/coinbase';
 import { GlideraPage } from '../integrations/glidera/glidera';
-import { MercadoLibrePage } from '../integrations/mercado-libre/mercado-libre';
-import { ShapeshiftPage } from '../integrations/shapeshift/shapeshift';
 import { TxDetailsPage } from '../tx-details/tx-details';
 import { TxpDetailsPage } from '../txp-details/txp-details';
 import { WalletDetailsPage } from '../wallet-details/wallet-details';
@@ -110,8 +106,8 @@ export class HomePage {
 
   ionViewWillEnter() {
     this.config = this.configProvider.get();
-    this.pushNotificationsProvider.init(); 
-    
+    this.pushNotificationsProvider.init();
+
     this.addressBookProvider.list().then((ab: any) => {
       this.addressbook = ab || {};
     }).catch((err) => {
@@ -145,17 +141,17 @@ export class HomePage {
     // Hide stars to rate
     this.events.subscribe('feedback:hide', () => {
       this.showRateCard = false;
-    }); 
+    });
   }
 
   ionViewDidEnter() {
     if (this.isNW) this.checkUpdate();
     this.checkHomeTip();
-    this.checkFeedbackInfo(); 
+    this.checkFeedbackInfo();
 
     if (this.platformProvider.isCordova) {
       this.handleDeepLinks();
-    } 
+    }
 
     // Show integrations
     let integrations = _.filter(this.homeIntegrationsProvider.get(), { 'show': true });
@@ -481,22 +477,22 @@ export class HomePage {
   public goTo(page): void {
     switch (page) {
       case 'AmazonPage':
-        this.navCtrl.push(AmazonPage);
+        this.navCtrl.push('AmazonPage');
         break;
       case 'BitPayCardIntroPage':
         this.navCtrl.push(BitPayCardIntroPage);
         break;
       case 'CoinbasePage':
-        this.navCtrl.push(CoinbasePage);
+        this.navCtrl.push('CoinbasePage');
         break;
       case 'GlideraPage':
         this.navCtrl.push(GlideraPage);
         break;
       case 'MercadoLibrePage':
-        this.navCtrl.push(MercadoLibrePage);
+        this.navCtrl.push('MercadoLibrePage');
         break;
       case 'ShapeshiftPage':
-        this.navCtrl.push(ShapeshiftPage);
+        this.navCtrl.push('ShapeshiftPage');
         break;
     }
   }

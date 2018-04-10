@@ -7,7 +7,6 @@ import { Logger } from '../../../../providers/logger/logger';
 
 // Pages
 import { FinishModalPage } from '../../../finish/finish';
-import { ShapeshiftPage } from '../shapeshift';
 
 // Providers
 import { BwcErrorProvider } from '../../../../providers/bwc-error/bwc-error';
@@ -475,10 +474,10 @@ export class ShapeshiftConfirmPage {
     modal.onDidDismiss(() => {
       this.navCtrl.popToRoot({ animate: false }).then(() => {
         this.navCtrl.parent.select(0);
-        
+
         // Fixes mobile navigation
         setTimeout(() => {
-          this.navCtrl.push(ShapeshiftPage, null, { animate: false });
+          this.navCtrl.push('ShapeshiftPage', null, { animate: false });
         }, 200);
       });
     });

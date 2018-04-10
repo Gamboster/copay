@@ -5,7 +5,6 @@ import { Logger } from '../../../../providers/logger/logger';
 
 // pages
 import { FinishModalPage } from '../../../finish/finish';
-import { CoinbasePage } from '../coinbase';
 
 // providers
 import { AppProvider } from '../../../../providers/app/app';
@@ -390,10 +389,10 @@ export class SellCoinbasePage {
     modal.onDidDismiss(() => {
       this.navCtrl.popToRoot({ animate: false }).then(() => {
         this.navCtrl.parent.select(0);
-        
+
         // Fixes mobile navigation
         setTimeout(() => {
-          this.navCtrl.push(CoinbasePage, { coin: 'btc' }, { animate: false });
+          this.navCtrl.push('CoinbasePage', { coin: 'btc' }, { animate: false });
         }, 200);
       });
     });

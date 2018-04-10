@@ -1,7 +1,7 @@
 import { Component, Inject } from '@angular/core';
 import { DOCUMENT } from "@angular/platform-browser";
 import { TranslateService } from '@ngx-translate/core';
-import { ActionSheetController, ToastController } from 'ionic-angular';
+import { ActionSheetController, IonicPage, ToastController } from 'ionic-angular';
 
 // native
 import { SocialSharing } from '@ionic-native/social-sharing';
@@ -13,6 +13,7 @@ import { PlatformProvider } from '../../../../providers/platform/platform';
 
 import * as _ from 'lodash';
 
+@IonicPage()
 @Component({
   selector: 'page-session-log',
   templateUrl: 'session-log.html',

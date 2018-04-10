@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
+import { IonicPage } from 'ionic-angular';
 import { Logger } from '../../../../providers/logger/logger';
 
+@IonicPage()
 @Component({
   selector: 'page-terms-of-use',
   templateUrl: 'terms-of-use.html',

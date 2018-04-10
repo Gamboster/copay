@@ -1,16 +1,13 @@
 import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { NavController } from 'ionic-angular';
+import { IonicPage, NavController } from 'ionic-angular';
 import { Logger } from '../../../providers/logger/logger';
-
-// pages
-import { SessionLogPage } from './session-log/session-log';
-import { TermsOfUsePage } from './terms-of-use/terms-of-use';
 
 // providers
 import { AppProvider } from '../../../providers/app/app';
 import { ExternalLinkProvider } from '../../../providers/external-link/external-link';
 
+@IonicPage()
 @Component({
   selector: 'page-about',
   templateUrl: 'about.html',
@@ -36,7 +33,7 @@ export class AboutPage {
   }
 
   public openTermsOfUse(): void {
-    this.navCtrl.push(TermsOfUsePage);
+    this.navCtrl.push('TermsOfUsePage');
   }
 
   public openExternalLink(): void {
@@ -50,7 +47,7 @@ export class AboutPage {
   }
 
   public openSessionLog(): void {
-    this.navCtrl.push(SessionLogPage);
+    this.navCtrl.push('SessionLogPage');
   }
 
 

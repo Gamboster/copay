@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Events, ModalController, NavController } from 'ionic-angular';
+import { Events, IonicPage, ModalController, NavController } from 'ionic-angular';
 import * as _ from 'lodash';
 import { Logger } from '../../../providers/logger/logger';
 
@@ -12,6 +12,7 @@ import { ExternalLinkProvider } from '../../../providers/external-link/external-
 import { ShapeshiftProvider } from '../../../providers/shapeshift/shapeshift';
 import { TimeProvider } from '../../../providers/time/time';
 
+@IonicPage()
 @Component({
   selector: 'page-shapeshift',
   templateUrl: 'shapeshift.html',

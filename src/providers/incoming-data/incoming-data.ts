@@ -14,7 +14,6 @@ import { ScanProvider } from '../scan/scan';
 import { ImportWalletPage } from '../../pages/add/import-wallet/import-wallet';
 import { JoinWalletPage } from '../../pages/add/join-wallet/join-wallet';
 import { BitPayCardIntroPage } from '../../pages/integrations/bitpay-card/bitpay-card-intro/bitpay-card-intro';
-import { CoinbasePage } from '../../pages/integrations/coinbase/coinbase';
 import { GlideraPage } from '../../pages/integrations/glidera/glidera';
 import { AmountPage } from '../../pages/send/amount/amount';
 import { ConfirmPage } from '../../pages/send/confirm/confirm';
@@ -207,7 +206,7 @@ export class IncomingDataProvider {
     } else if (data && data.indexOf(this.appProvider.info.name + '://coinbase') === 0) {
 
       let code = this.getParameterByName('code', data);
-      this.navCtrl.push(CoinbasePage, { code });
+      this.navCtrl.push('CoinbasePage', { code });
 
       this.logger.debug('Coinbase TODO');
       return true;

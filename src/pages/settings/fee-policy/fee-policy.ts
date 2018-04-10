@@ -1,14 +1,16 @@
 import { Component } from '@angular/core';
+import { IonicPage } from 'ionic-angular';
 import * as _ from 'lodash';
-import { Logger } from '../../../providers/logger/logger';
 
 // Providers
 import { ConfigProvider } from '../../../providers/config/config';
 import { FeeProvider } from '../../../providers/fee/fee';
+import { Logger } from '../../../providers/logger/logger';
 
 const COIN = 'btc';
 const NETWORK = 'livenet';
 
+@IonicPage()
 @Component({
   selector: 'page-fee-policy',
   templateUrl: 'fee-policy.html',

@@ -61,14 +61,12 @@ import { WalletBalancePage } from '../pages/wallet-details/wallet-balance/wallet
 import { WalletDetailsPage } from '../pages/wallet-details/wallet-details';
 
 // Integrations: Amazon
-import { AmazonPage } from '../pages/integrations/amazon/amazon';
 import { AmazonCardDetailsPage } from '../pages/integrations/amazon/amazon-card-details/amazon-card-details';
 import { AmazonSettingsPage } from '../pages/integrations/amazon/amazon-settings/amazon-settings';
 import { BuyAmazonPage } from '../pages/integrations/amazon/buy-amazon/buy-amazon';
 
 // Integrations: Coinbase
 import { BuyCoinbasePage } from '../pages/integrations/coinbase/buy-coinbase/buy-coinbase';
-import { CoinbasePage } from '../pages/integrations/coinbase/coinbase';
 import { CoinbaseSettingsPage } from '../pages/integrations/coinbase/coinbase-settings/coinbase-settings';
 import { CoinbaseTxDetailsPage } from '../pages/integrations/coinbase/coinbase-tx-details/coinbase-tx-details';
 import { SellCoinbasePage } from '../pages/integrations/coinbase/sell-coinbase/sell-coinbase';
@@ -82,12 +80,10 @@ import { SellGlideraPage } from '../pages/integrations/glidera/sell-glidera/sell
 
 // Integrations: Mercado Libre
 import { BuyMercadoLibrePage } from '../pages/integrations/mercado-libre/buy-mercado-libre/buy-mercado-libre';
-import { MercadoLibrePage } from '../pages/integrations/mercado-libre/mercado-libre';
 import { MercadoLibreCardDetailsPage } from '../pages/integrations/mercado-libre/mercado-libre-card-details/mercado-libre-card-details';
 import { MercadoLibreSettingsPage } from '../pages/integrations/mercado-libre/mercado-libre-settings/mercado-libre-settings';
 
 // Integrations: ShapeShift
-import { ShapeshiftPage } from '../pages/integrations/shapeshift/shapeshift';
 import { ShapeshiftConfirmPage } from '../pages/integrations/shapeshift/shapeshift-confirm/shapeshift-confirm';
 import { ShapeshiftDetailsPage } from '../pages/integrations/shapeshift/shapeshift-details/shapeshift-details';
 import { ShapeshiftSettingsPage } from '../pages/integrations/shapeshift/shapeshift-settings/shapeshift-settings';
@@ -122,15 +118,11 @@ import { ProposalsPage } from '../pages/home/proposals/proposals';
 /* Settings */
 import { FingerprintModalPage } from '../pages/fingerprint/fingerprint';
 import { PinModalPage } from '../pages/pin/pin';
-import { AboutPage } from '../pages/settings/about/about';
-import { SessionLogPage } from '../pages/settings/about/session-log/session-log';
-import { TermsOfUsePage } from '../pages/settings/about/terms-of-use/terms-of-use';
 import { AddressbookAddPage } from '../pages/settings/addressbook/add/add';
 import { AddressbookPage } from '../pages/settings/addressbook/addressbook';
 import { AddressbookViewPage } from '../pages/settings/addressbook/view/view';
 import { AdvancedPage } from '../pages/settings/advanced/advanced';
 import { AltCurrencyPage } from '../pages/settings/alt-currency/alt-currency';
-import { FeePolicyPage } from '../pages/settings/fee-policy/fee-policy';
 import { LanguagePage } from '../pages/settings/language/language';
 import { LockPage } from '../pages/settings/lock/lock';
 import { NotificationsPage } from '../pages/settings/notifications/notifications';
@@ -158,13 +150,6 @@ import { ConfirmPage } from '../pages/send/confirm/confirm';
 
 /* Receive */
 import { CustomAmountPage } from '../pages/receive/custom-amount/custom-amount';
-
-/* Pipes */
-import { FiatToUnitPipe } from '../pipes/fiatToUnit';
-import { KeysPipe } from '../pipes/keys';
-import { OrderByPipe } from '../pipes/order-by';
-import { SatToFiatPipe } from '../pipes/satToFiat';
-import { SatToUnitPipe } from '../pipes/satToUnit';
 
 /* Providers */
 import { AddressBookProvider } from '../providers/address-book/address-book';
@@ -226,13 +211,11 @@ export function createTranslateLoader(http: HttpClient) {
     ActivityPage,
     AddPage,
     AmazonCardDetailsPage,
-    AmazonPage,
     AmazonSettingsPage,
     AmountPage,
     AddressbookPage,
     AddressbookAddPage,
     AddressbookViewPage,
-    AboutPage,
     AdvancedPage,
     AllAddressesPage,
     AltCurrencyPage,
@@ -248,7 +231,6 @@ export function createTranslateLoader(http: HttpClient) {
     BuyMercadoLibrePage,
     ChooseFeeLevelPage,
     CreateWalletPage,
-    CoinbasePage,
     CoinbaseTxDetailsPage,
     CopayersPage,
     FeedbackCardPage,
@@ -274,7 +256,6 @@ export function createTranslateLoader(http: HttpClient) {
     HomePage,
     LanguagePage,
     LockPage,
-    MercadoLibrePage,
     MercadoLibreSettingsPage,
     OnboardingPage,
     PaperWalletPage,
@@ -293,13 +274,9 @@ export function createTranslateLoader(http: HttpClient) {
     ShapeshiftConfirmPage,
     ShapeshiftDetailsPage,
     ShapeshiftSettingsPage,
-    ShapeshiftPage,
     ShapeshiftShiftPage,
-    TermsOfUsePage,
     MercadoLibreCardDetailsPage,
     NotificationsPage,
-    FeePolicyPage,
-    SessionLogPage,
     SendFeedbackPage,
     FinishModalPage,
     TourPage,
@@ -328,13 +305,7 @@ export function createTranslateLoader(http: HttpClient) {
     /* Directives */
     CopyToClipboard,
     LongPress,
-    NoLowFee,
-    /* Pipes */
-    SatToUnitPipe,
-    SatToFiatPipe,
-    FiatToUnitPipe,
-    KeysPipe,
-    OrderByPipe
+    NoLowFee
   ],
   imports: [
     IonicModule.forRoot(CopayApp, {
@@ -362,13 +333,11 @@ export function createTranslateLoader(http: HttpClient) {
     ActivityPage,
     AddPage,
     AmazonCardDetailsPage,
-    AmazonPage,
     AmazonSettingsPage,
     AmountPage,
     AddressbookPage,
     AddressbookAddPage,
     AddressbookViewPage,
-    AboutPage,
     AdvancedPage,
     AllAddressesPage,
     AltCurrencyPage,
@@ -384,7 +353,6 @@ export function createTranslateLoader(http: HttpClient) {
     BuyMercadoLibrePage,
     ChooseFeeLevelPage,
     CreateWalletPage,
-    CoinbasePage,
     CoinbaseTxDetailsPage,
     CopayersPage,
     FeedbackCardPage,
@@ -410,7 +378,6 @@ export function createTranslateLoader(http: HttpClient) {
     HomePage,
     LanguagePage,
     LockPage,
-    MercadoLibrePage,
     MercadoLibreSettingsPage,
     OnboardingPage,
     PaperWalletPage,
@@ -429,13 +396,9 @@ export function createTranslateLoader(http: HttpClient) {
     ShapeshiftConfirmPage,
     ShapeshiftDetailsPage,
     ShapeshiftSettingsPage,
-    ShapeshiftPage,
     ShapeshiftShiftPage,
-    TermsOfUsePage,
     MercadoLibreCardDetailsPage,
     NotificationsPage,
-    FeePolicyPage,
-    SessionLogPage,
     SendFeedbackPage,
     FinishModalPage,
     TourPage,
@@ -524,4 +487,4 @@ export function createTranslateLoader(http: HttpClient) {
     }
   ]
 })
-export class AppModule {}
+export class AppModule { }

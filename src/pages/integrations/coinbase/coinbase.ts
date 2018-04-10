@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ModalController, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, ModalController, NavController, NavParams } from 'ionic-angular';
 import { Logger } from '../../../providers/logger/logger';
 
 // providers
@@ -16,6 +16,7 @@ import { CoinbaseTxDetailsPage } from './coinbase-tx-details/coinbase-tx-details
 
 import * as _ from 'lodash';
 
+@IonicPage()
 @Component({
   selector: 'page-coinbase',
   templateUrl: 'coinbase.html',

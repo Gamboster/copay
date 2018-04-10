@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { Logger } from '../../../providers/logger/logger';
 
-import { TermsOfUsePage } from '../../settings/about/terms-of-use/terms-of-use';
 import { TabsPage } from '../../tabs/tabs';
 
 import { PersistenceProvider } from '../../../providers/persistence/persistence';
@@ -38,7 +37,7 @@ export class DisclaimerPage {
   }
 
   openDisclaimer() {
-    this.navCtrl.push(TermsOfUsePage);
+    this.navCtrl.push('TermsOfUsePage');
   }
 
   confirm() {

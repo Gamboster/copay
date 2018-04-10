@@ -24,12 +24,10 @@ import { CoinbaseSettingsPage } from '../integrations/coinbase/coinbase-settings
 import { GlideraSettingsPage } from '../integrations/glidera/glidera-settings/glidera-settings';
 import { MercadoLibreSettingsPage } from '../integrations/mercado-libre/mercado-libre-settings/mercado-libre-settings';
 import { ShapeshiftSettingsPage } from '../integrations/shapeshift/shapeshift-settings/shapeshift-settings';
-import { AboutPage } from './about/about';
 import { AddressbookPage } from './addressbook/addressbook';
 import { AdvancedPage } from './advanced/advanced';
 import { AltCurrencyPage } from './alt-currency/alt-currency';
 import { BitcoinCashPage } from './bitcoin-cash/bitcoin-cash';
-import { FeePolicyPage } from './fee-policy/fee-policy';
 import { LanguagePage } from './language/language';
 import { LockPage } from './lock/lock';
 import { NotificationsPage } from './notifications/notifications';
@@ -128,7 +126,7 @@ export class SettingsPage {
   }
 
   public openAboutPage(): void {
-    this.navCtrl.push(AboutPage);
+    this.navCtrl.push('AboutPage');
   }
 
   public openLockPage(): void {
@@ -144,7 +142,7 @@ export class SettingsPage {
   }
 
   public openFeePolicyPage(): void {
-    this.navCtrl.push(FeePolicyPage);
+    this.navCtrl.push('FeePolicyPage');
   }
 
   public openWalletSettingsPage(walletId: string): void {

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ModalController, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, ModalController, NavController, NavParams } from 'ionic-angular';
 import * as _ from 'lodash';
 import { Logger } from '../../../providers/logger/logger';
 
@@ -13,6 +13,7 @@ import { ExternalLinkProvider } from '../../../providers/external-link/external-
 import { PopupProvider } from '../../../providers/popup/popup';
 import { TimeProvider } from '../../../providers/time/time';
 
+@IonicPage()
 @Component({
   selector: 'page-amazon',
   templateUrl: 'amazon.html',

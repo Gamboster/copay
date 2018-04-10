@@ -15,7 +15,6 @@ import { WalletProvider } from '../../../../providers/wallet/wallet';
 
 // pages
 import { FinishModalPage } from '../../../finish/finish';
-import { CoinbasePage } from '../coinbase';
 
 @Component({
   selector: 'page-buy-coinbase',
@@ -326,7 +325,7 @@ export class BuyCoinbasePage {
 
         // Fixes mobile navigation
         setTimeout(() => {
-          this.navCtrl.push(CoinbasePage, { coin: 'btc' }, { animate: false });
+          this.navCtrl.push('CoinbasePage', { coin: 'btc' }, { animate: false });
         }, 200);
       });
     });

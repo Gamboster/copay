@@ -8,7 +8,6 @@ import { Logger } from '../../../../providers/logger/logger';
 // Pages
 import { FinishModalPage } from '../../../finish/finish';
 import { FeeWarningPage } from '../../../send/fee-warning/fee-warning';
-import { AmazonPage } from '../amazon';
 
 // Provider
 import { AmazonProvider } from '../../../../providers/amazon/amazon';
@@ -498,10 +497,10 @@ export class BuyAmazonPage {
     modal.onDidDismiss(() => {
       this.navCtrl.popToRoot({ animate: false }).then(() => {
         this.navCtrl.parent.select(0);
-        
+
         // Fixes mobile navigation
         setTimeout(() => {
-          this.navCtrl.push(AmazonPage, { invoiceId: this.invoiceId }, { animate: false });
+          this.navCtrl.push('AmazonPage', { invoiceId: this.invoiceId }, { animate: false });
         }, 200);
       });
     });
