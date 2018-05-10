@@ -16,8 +16,9 @@ import { GiftCardNewData } from '../../gift-cards';
   templateUrl: 'amazon-card-details.html'
 })
 export class AmazonCardDetailsPage {
-  public updateGiftCard: boolean;
   public card;
+  public updateGiftCard: boolean;
+  public country: string;
 
   constructor(
     private amazonProvider: AmazonProvider,
@@ -30,6 +31,9 @@ export class AmazonCardDetailsPage {
     private viewCtrl: ViewController
   ) {
     this.card = this.navParams.data.card;
+    this.country = this.navParams.data.country
+      ? this.navParams.data.country
+      : 'usa';
   }
 
   ionViewDidLoad() {
