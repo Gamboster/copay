@@ -19,6 +19,8 @@ export class AmazonCardDetailsPage {
   public card;
   public updateGiftCard: boolean;
   public country: string;
+  public currency: string;
+  public redeemAmazonUrl: string;
 
   constructor(
     private amazonProvider: AmazonProvider,
@@ -31,9 +33,9 @@ export class AmazonCardDetailsPage {
     private viewCtrl: ViewController
   ) {
     this.card = this.navParams.data.card;
-    this.country = this.navParams.data.country
-      ? this.navParams.data.country
-      : 'usa';
+    this.country = this.amazonProvider.getCountry();
+    this.currency = this.amazonProvider.getCurrency();
+    this.redeemAmazonUrl = this.amazonProvider.getRedeemAmazonUrl();
   }
 
   ionViewDidLoad() {
