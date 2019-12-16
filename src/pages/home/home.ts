@@ -15,6 +15,7 @@ import { BitPayCardIntroPage } from '../integrations/bitpay-card/bitpay-card-int
 import { CoinbasePage } from '../integrations/coinbase/coinbase';
 import { ShapeshiftPage } from '../integrations/shapeshift/shapeshift';
 import { SimplexPage } from '../integrations/simplex/simplex';
+import { WyrePage } from '../integrations/wyre/wyre';
 import { SettingsPage } from '../settings/settings';
 import { ProposalsPage } from './proposals/proposals';
 
@@ -599,9 +600,9 @@ export class HomePage {
 
     this.logger.debug(
       'fetching status for: ' +
-        opts.walletId +
-        ' alsohistory:' +
-        opts.alsoUpdateHistory
+      opts.walletId +
+      ' alsohistory:' +
+      opts.alsoUpdateHistory
     );
     const wallet = this.profileProvider.getWallet(opts.walletId);
     if (!wallet) return;
@@ -799,7 +800,8 @@ export class HomePage {
       BitPayCardIntroPage,
       CoinbasePage,
       ShapeshiftPage,
-      SimplexPage
+      SimplexPage,
+      WyrePage
     };
     this.navCtrl.push(pageMap[page]);
   }

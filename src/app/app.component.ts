@@ -31,6 +31,7 @@ import { PushNotificationsProvider } from '../providers/push-notifications/push-
 import { ShapeshiftProvider } from '../providers/shapeshift/shapeshift';
 import { SimplexProvider } from '../providers/simplex/simplex';
 import { TouchIdProvider } from '../providers/touchid/touchid';
+import { WyreProvider } from '../providers/wyre/wyre';
 
 // pages
 import { ImageLoaderConfig } from 'ionic-image-loader';
@@ -44,6 +45,7 @@ import { CoinbasePage } from '../pages/integrations/coinbase/coinbase';
 import { SelectInvoicePage } from '../pages/integrations/invoice/select-invoice/select-invoice';
 import { ShapeshiftPage } from '../pages/integrations/shapeshift/shapeshift';
 import { SimplexPage } from '../pages/integrations/simplex/simplex';
+import { WyrePage } from '../pages/integrations/wyre/wyre';
 import { DisclaimerPage } from '../pages/onboarding/disclaimer/disclaimer';
 import { OnboardingPage } from '../pages/onboarding/onboarding';
 import { PaperWalletPage } from '../pages/paper-wallet/paper-wallet';
@@ -92,6 +94,7 @@ export class CopayApp {
     PaperWalletPage,
     ShapeshiftPage,
     SimplexPage,
+    WyrePage,
     SelectInvoicePage,
     WalletDetailsPage
   };
@@ -123,7 +126,8 @@ export class CopayApp {
     private renderer: Renderer,
     private userAgent: UserAgent,
     private device: Device,
-    private keyProvider: KeyProvider
+    private keyProvider: KeyProvider,
+    private wyreProvider: WyreProvider
   ) {
     this.imageLoaderConfig.setFileNameCachedWithExtension(true);
     this.imageLoaderConfig.useImageTag(true);
@@ -170,14 +174,14 @@ export class CopayApp {
 
     this.logger.info(
       'Platform ready (' +
-        readySource +
-        '): ' +
-        this.appProvider.info.nameCase +
-        ' - v' +
-        this.appProvider.info.version +
-        ' #' +
-        this.appProvider.info.commitHash +
-        deviceInfo
+      readySource +
+      '): ' +
+      this.appProvider.info.nameCase +
+      ' - v' +
+      this.appProvider.info.version +
+      ' #' +
+      this.appProvider.info.commitHash +
+      deviceInfo
     );
 
     if (this.platform.is('cordova')) {
@@ -186,15 +190,15 @@ export class CopayApp {
       // Set User-Agent
       this.userAgent.set(
         this.appProvider.info.name +
-          ' ' +
-          this.appProvider.info.version +
-          ' (' +
-          this.device.platform +
-          ' ' +
-          this.device.version +
-          ' - ' +
-          this.device.model +
-          ')'
+        ' ' +
+        this.appProvider.info.version +
+        ' (' +
+        this.device.platform +
+        ' ' +
+        this.device.version +
+        ' - ' +
+        this.device.model +
+        ')'
       );
 
       // Set to portrait
@@ -340,6 +344,11 @@ export class CopayApp {
     // Simplex
     if (this.appProvider.info._enabledExtensions.simplex) {
       this.simplexProvider.register();
+    }
+
+    // Wyre
+    if (this.appProvider.info._enabledExtensions.wyre) {
+      this.wyreProvider.register();
     }
 
     // Coinbase

@@ -33,6 +33,7 @@
     "debitcard": true,
     "shapeshift": true,
     "simplex": true,
+    "wyre": true,
     "giftcards": true
   }
 }

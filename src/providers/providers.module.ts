@@ -70,7 +70,8 @@ import {
   UserAgent,
   Vibration,
   WalletProvider,
-  WalletTabsProvider
+  WalletTabsProvider,
+  WyreProvider
 } from './index';
 
 @NgModule({
@@ -143,7 +144,8 @@ import {
     DecimalPipe,
     PersistenceProvider,
     File,
-    WalletTabsProvider
+    WalletTabsProvider,
+    WyreProvider
   ]
 })
-export class ProvidersModule {}
+export class ProvidersModule { }

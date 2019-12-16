@@ -69,7 +69,8 @@ const Keys = {
   ORDER_WALLET: walletId => 'order-' + walletId,
   SERVER_MESSAGE_DISMISSED: messageId => 'serverMessageDismissed-' + messageId,
   SHAPESHIFT_TOKEN: network => 'shapeshiftToken-' + network,
-  WALLET_GROUP_NAME: keyId => `Key-${keyId}`
+  WALLET_GROUP_NAME: keyId => `Key-${keyId}`,
+  WYRE_TOKEN: network => 'wyreToken-' + network
 };
 
 interface Storage {
@@ -595,6 +596,30 @@ export class PersistenceProvider {
 
   removeSimplex(env: string) {
     return this.storage.remove('simplex-' + env);
+  }
+
+  setWyre(network: string, data) {
+    return this.storage.set('wyre-' + network, data);
+  }
+
+  getWyre(network: string) {
+    return this.storage.get('wyre-' + network);
+  }
+
+  removeWyre(network: string) {
+    return this.storage.remove('wyre-' + network);
+  }
+
+  setWyreToken(network: string, token: string) {
+    return this.storage.set(Keys.WYRE_TOKEN(network), token);
+  }
+
+  getWyreToken(network: string) {
+    return this.storage.get(Keys.WYRE_TOKEN(network));
+  }
+
+  removeWyreToken(network: string) {
+    return this.storage.remove(Keys.WYRE_TOKEN(network));
   }
 
   setWalletOrder(walletId: string, order: number) {

@@ -25,6 +25,7 @@ import { CoinbaseSettingsPage } from '../integrations/coinbase/coinbase-settings
 import { GiftCardsSettingsPage } from '../integrations/gift-cards/gift-cards-settings/gift-cards-settings';
 import { ShapeshiftSettingsPage } from '../integrations/shapeshift/shapeshift-settings/shapeshift-settings';
 import { SimplexSettingsPage } from '../integrations/simplex/simplex-settings/simplex-settings';
+import { WyreSettingsPage } from '../integrations/wyre/wyre-settings/wyre-settings';
 import { PinModalPage } from '../pin/pin-modal/pin-modal';
 import { AboutPage } from './about/about';
 import { AddressbookPage } from './addressbook/addressbook';
@@ -190,6 +191,9 @@ export class SettingsPage {
         break;
       case 'simplex':
         this.navCtrl.push(SimplexSettingsPage);
+        break;
+      case 'wyre':
+        this.navCtrl.push(WyreSettingsPage);
         break;
       case 'giftcards':
         this.navCtrl.push(GiftCardsSettingsPage);

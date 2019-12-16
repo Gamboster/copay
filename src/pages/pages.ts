@@ -46,6 +46,10 @@ import { SimplexBuyPage } from '../pages/integrations/simplex/simplex-buy/simple
 import { SimplexDetailsPage } from '../pages/integrations/simplex/simplex-details/simplex-details';
 import { SimplexSettingsPage } from '../pages/integrations/simplex/simplex-settings/simplex-settings';
 
+// Integrations: Wyre
+import { WyrePage } from '../pages/integrations/wyre/wyre';
+import { WyreSettingsPage } from '../pages/integrations/wyre/wyre-settings/wyre-settings';
+
 // Integrations: BitPayCard
 import { BitPayCardPage } from '../pages/integrations/bitpay-card/bitpay-card';
 import { BitPayCardHome } from '../pages/integrations/bitpay-card/bitpay-card-home/bitpay-card-home';
@@ -196,6 +200,8 @@ export const PAGES = [
   SimplexBuyPage,
   SimplexDetailsPage,
   SimplexSettingsPage,
+  WyrePage,
+  WyreSettingsPage,
   NotificationsPage,
   FeePolicyPage,
   SearchTxModalPage,

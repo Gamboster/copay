@@ -85,3 +85,4 @@ export {
 export { TxFormatProvider } from '../providers/tx-format/tx-format';
 export { WalletProvider } from '../providers/wallet/wallet';
 export { WalletTabsProvider } from '../pages/wallet-tabs/wallet-tabs.provider';
+export { WyreProvider } from '../providers/wyre/wyre';

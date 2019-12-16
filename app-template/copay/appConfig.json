@@ -32,7 +32,8 @@
     "glidera": false,
     "debitcard": false,
     "shapeshift": false,
-    "simplex": false,
+    "simplex": true,
+    "wyre": true,
     "giftcards": false
   }
 }
