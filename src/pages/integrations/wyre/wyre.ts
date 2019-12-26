@@ -59,26 +59,40 @@ export class WyrePage {
     this.showOauthForm = false;
     this.network = this.wyreProvider.getNetwork();
     this.shifts = { data: {} };
-    this.headerColor = '#0d172c';
+    this.headerColor = '#365bca';
   }
 
   ionViewDidLoad() {
-    this.logger.info('Loaded: ShapeshiftPage');
+    this.logger.info('Loaded: WyrePage');
   }
 
   ionViewWillEnter() {
     if (this.platformProvider.isCordova) {
       this.statusBar.styleBlackOpaque();
     }
-    if (this.navParams.data.code) {
+
+    const code = this.createCode(25); // TODO
+
+    if (this.navParams.data.code || code) {
       this.wyreProvider.getStoredToken((at: string) => {
-        at ? this.init() : this.submitOauthCode(this.navParams.data.code);
+        at ? this.init() : this.submitOauthCode(this.navParams.data.code || code);
       });
     } else {
       this.init();
     }
 
     this.events.subscribe('bwsEvent', this.bwsEventHandler);
+  }
+
+  private createCode(length: number): string {
+    let result = '';
+    let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    console.log('-------- createCode code: ', result);
+    return result;
   }
 
   ionViewWillLeave() {
@@ -108,7 +122,7 @@ export class WyrePage {
             } else {
               this.popupProvider
                 .ionicAlert(
-                this.translate.instant('Error connecting to ShapeShift'),
+                this.translate.instant('Error connecting to Wyre'),
                 err
                 )
                 .then(() => {
@@ -215,7 +229,7 @@ export class WyrePage {
   }
 
   private openShafeShiftWindow(): void {
-    const url = 'https://portal.shapeshift.io/me/fox/dashboard';
+    const url = 'https://portal.wyre.io/me/fox/dashboard';
     const optIn = true;
     const title = this.translate.instant('Unverified Account');
     const message = this.translate.instant(
@@ -233,10 +247,10 @@ export class WyrePage {
   public openSignupWindow(): void {
     const url = this.wyreProvider.getSignupUrl();
     const optIn = true;
-    const title = 'Sign Up for ShapeShift';
+    const title = 'Sign Up for Wyre';
     const message =
-      'This will open shapeshift.io, where you can create an account.';
-    const okText = 'Go to ShapeShift';
+      'This will open wyre.io, where you can create an account.';
+    const okText = 'Go to Wyre';
     const cancelText = 'Back';
     this.externalLinkProvider.open(
       url,
@@ -249,12 +263,12 @@ export class WyrePage {
   }
 
   public submitOauthCode(code: string): void {
-    this.onGoingProcessProvider.set('connectingShapeshift');
+    this.onGoingProcessProvider.set('connectingWyre');
     this.wyreProvider.getToken(code, (err: any, accessToken: string) => {
       this.onGoingProcessProvider.clear();
       if (err) {
         this.error = err;
-        this.logger.error('Error connecting to ShapeShift: ' + err);
+        this.logger.error('Error connecting to Wyre: ' + err);
         return;
       }
       this.navCtrl.pop();

@@ -27,6 +27,7 @@ export class WyreProvider {
   }
 
   public setCredentials() {
+    console.log('========= this.appProvider: ', this.appProvider);
     // (Mandatory) Affiliate PUBLIC KEY, for volume tracking, affiliate payments, split-shifts, etc.
     if (
       !this.appProvider.servicesInfo ||
@@ -41,7 +42,7 @@ export class WyreProvider {
      * Development: 'testnet'
      * Production: 'livenet'
      */
-    this.credentials.NETWORK = 'livenet';
+    this.credentials.NETWORK = 'testnet';
     this.credentials.ENV =
       this.credentials.NETWORK === 'testnet'
         ? 'test'
@@ -220,6 +221,7 @@ export class WyreProvider {
   }
 
   private isActive(cb) {
+    console.log('-----------------this.credentials: ', this.credentials);
     if (_.isEmpty(this.credentials.CLIENT_ID)) return cb(false);
 
     this.persistenceProvider
@@ -273,13 +275,10 @@ export class WyreProvider {
   }
 
   public getToken(code, cb) {
-    const url = this.credentials.HOST + '/oauth/token';
+    const url = this.credentials.API + '/v2/sessions/auth/key';
+    console.log('---------- getToken url: ', url);
     const data = {
-      grant_type: 'authorization_code',
-      code,
-      client_id: this.credentials.CLIENT_ID,
-      client_secret: this.credentials.CLIENT_SECRET,
-      redirect_uri: this.credentials.REDIRECT_URI
+      secretKey: code
     };
     const headers = {
       'Content-Type': 'application/json',
@@ -288,11 +287,15 @@ export class WyreProvider {
 
     this.httpNative.post(url, data, headers).subscribe(
       data => {
+        console.log('----------- getAccessTokenDetails data1: ', data);
+
         this.logger.info('Wyre: GET Access Token: SUCCESS');
         // Show pending task from the UI
         this._afterTokenReceived(data, cb);
       },
       data => {
+        console.log('----------- getAccessTokenDetails data2 error: ', data);
+
         const error = this.parseError(data);
         this.logger.error(
           'Wyre: GET Access Token: ERROR ' + data.status + '. ' + error
@@ -316,9 +319,9 @@ export class WyreProvider {
   }
 
   public init = _.throttle(cb => {
-    if (_.isEmpty(this.credentials.CLIENT_ID)) {
-      return cb('Wyre is Disabled. Missing credentials.');
-    }
+    // if (_.isEmpty(this.credentials.CLIENT_ID)) {
+    //   return cb('Wyre is Disabled. Missing credentials.');
+    // } 
     this.logger.debug('Trying to initialize Wyre...');
 
     this.getStoredToken(accessToken => {

@@ -42,7 +42,7 @@ export class WyreSettingsPage {
       name: this.serviceName
     });
     this.showInHome = !!this.service[0].show;
-    this.headerColor = '#0d172c';
+    this.headerColor = '#365bca';
   }
 
   ionViewWillEnter() {

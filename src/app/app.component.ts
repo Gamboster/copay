@@ -348,6 +348,7 @@ export class CopayApp {
 
     // Wyre
     if (this.appProvider.info._enabledExtensions.wyre) {
+      this.wyreProvider.setCredentials();
       this.wyreProvider.register();
     }
 

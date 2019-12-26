@@ -29,6 +29,7 @@ export class OnGoingProcessProvider {
       connectingShapeshift: this.translate.instant(
         'Connecting to ShapeShift...'
       ),
+      connectingWyre: this.translate.instant('Connecting to Wyre...'),
       creatingTx: this.translate.instant('Creating transaction...'),
       creatingWallet: this.translate.instant('Creating Wallet...'),
       deletingWallet: this.translate.instant('Deleting Wallet...'),
