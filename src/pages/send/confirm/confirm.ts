@@ -141,6 +141,7 @@ export class ConfirmPage {
     this.fromSelectInputs = this.navParams.data.fromSelectInputs;
     this.appName = this.appProvider.info.nameCase;
     this.isSpeedUpTx = this.navParams.data.speedUpTx;
+    console.log('---------- confirm page');
   }
 
   ngOnInit() {
@@ -231,6 +232,7 @@ export class ConfirmPage {
       coin: this.navParams.data.coin,
       txp: {},
       tokenAddress: this.navParams.data.tokenAddress,
+      multisigAddress: this.navParams.data.multisigAddress,
       speedUpTx: this.isSpeedUpTx,
       fromSelectInputs: this.navParams.data.fromSelectInputs ? true : false,
       inputs: this.navParams.data.inputs
@@ -937,6 +939,21 @@ export class ConfirmPage {
                   { address: output.toAddress, amount: output.amount }
                 ],
                 tokenAddress: tx.tokenAddress
+              });
+          }
+        }
+      }
+
+      if (tx.multisigAddress) {
+        txp.multisigAddress = tx.multisigAddress;
+        for (const output of txp.outputs) {
+          if (!output.data) {
+            output.data = this.bwcProvider
+              .getCore()
+              .Transactions.get({ chain: 'ETHMULTISIG' })
+              .encodeData({
+                addresses: this.navParams.data.multisigAddresses,
+                multisigAddress: tx.multisigAddress
               });
           }
         }

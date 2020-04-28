@@ -30,6 +30,7 @@ import { PhaseOneCardIntro } from '../integrations/bitpay-card/bitpay-card-phase
 import { CoinbasePage } from '../integrations/coinbase/coinbase';
 import { BuyCardPage } from '../integrations/gift-cards/buy-card/buy-card';
 import { CardCatalogPage } from '../integrations/gift-cards/card-catalog/card-catalog';
+import { ConfirmPage } from '../send/confirm/confirm';
 
 export interface Advertisement {
   name: string;
@@ -159,6 +160,19 @@ export class HomePage {
   }
 
   private subscribeEvents() {
+    this.events.subscribe('goToConfirm', opts => {
+      console.log('-------------- entra  aqui???????????????????? opts', opts);
+      this.navCtrl.push(ConfirmPage, {
+        walletId: opts.walletId, // le de aeth madre
+        totalAmount: opts.totalAmount,
+        amount: opts.amount,
+        multisigAddresses: opts.multisigAddresses,
+        coin: opts.coin,
+        network: opts.network,
+        multisigAddress: opts.multisigAddress, // address gnosis multisig contract
+        toAddress: opts.multisigAddress
+      });
+    });
     this.events.subscribe('Local/HomeBalance', data => {
       if (data && this.showTotalBalance) this.setTotalBalance(data);
       this.fetchingStatus = false;

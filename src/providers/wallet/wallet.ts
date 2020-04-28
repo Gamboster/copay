@@ -80,6 +80,7 @@ export interface TransactionProposal {
   tokenAddress?: string;
   destinationTag?: string;
   invoiceID?: string;
+  multisigAddress?: string[];
 }
 
 @Injectable()

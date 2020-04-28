@@ -10,6 +10,7 @@ import {
 import * as _ from 'lodash';
 
 // Providers
+import { ActionSheetProvider } from '../../../providers/action-sheet/action-sheet';
 import { BwcErrorProvider } from '../../../providers/bwc-error/bwc-error';
 import { BwcProvider } from '../../../providers/bwc/bwc';
 import { ConfigProvider } from '../../../providers/config/config';
@@ -70,7 +71,13 @@ export class CreateWalletPage implements OnInit {
   public cancelText: string;
   public createForm: FormGroup;
 
+  public multisigAddresses: string[];
+  public search: string;
+  public invalidAddress: boolean;
+  public pairedWallet: any;
+
   constructor(
+    private actionSheetProvider: ActionSheetProvider,
     private currencyProvider: CurrencyProvider,
     private navCtrl: NavController,
     private navParams: NavParams,
@@ -98,6 +105,7 @@ export class CreateWalletPage implements OnInit {
     this.coinName = this.currencyProvider.getCoinName(this.coin);
     this.keyId = this.navParams.get('keyId');
     this.defaults = this.configProvider.getDefaults();
+    this.multisigAddresses = [];
     this.tc = this.isShared ? this.defaults.wallet.totalCopayers : 1;
     this.copayers = _.range(2, this.defaults.limits.totalCopayers + 1);
     this.derivationPathByDefault = this.isShared
@@ -135,6 +143,9 @@ export class CreateWalletPage implements OnInit {
   ngOnInit() {
     if (this.isShared) {
       this.createForm.get('myName').setValidators([Validators.required]);
+      if (this.coin.toLowerCase() == 'eth') {
+        this.showPairedWalletSelector();
+      }
     }
   }
 
@@ -197,6 +208,10 @@ export class CreateWalletPage implements OnInit {
   }
 
   public setOptsAndCreate(): void {
+    if (this.isShared && this.coin.toLowerCase() == 'eth') {
+      this.goToConfirm();
+      return;
+    }
     const opts: Partial<WalletOptions> = {
       keyId: this.keyId,
       name: this.createForm.value.walletName,
@@ -406,5 +421,67 @@ export class CreateWalletPage implements OnInit {
         }
         break;
     }
+  }
+
+  public processInput(): void {
+    if (this.search && this.search.trim() != '') {
+      const isValid = this.checkCoinAndNetwork(this.search);
+      if (isValid) {
+        this.invalidAddress = false;
+      }
+    } else {
+      this.invalidAddress = true;
+    }
+  }
+
+  private checkCoinAndNetwork(address: string) {
+    console.log('----- address:', address);
+    return true;
+  }
+
+  public openScanner() {
+    console.log('----- open scanner');
+  }
+
+  public addAddress() {
+    this.multisigAddresses.push(this.search);
+  }
+
+  private goToConfirm(opts?): void {
+    console.log('---------- opts: ', opts);
+    let totalAmount = 0;
+    this.navCtrl.popToRoot().then(() => {
+      this.events.publish('goToConfirm', {
+        walletId: this.pairedWallet.credentials.walletId, // le de aeth madre
+        totalAmount,
+        multisigAddresses: this.multisigAddresses,
+        coin: this.coin,
+        network: this.createForm.value.testnetEnabled ? 'testnet' : 'livenet',
+        multisigAddress: '0x2C992817e0152A65937527B774c7A99a84603045' // address gnosis multisig contract
+      });
+    });
+  }
+
+  public showPairedWalletSelector() {
+    const eligibleWallets = this.keyId
+      ? this.profileProvider.getWalletsFromGroup({
+          keyId: this.keyId,
+          coin: 'eth'
+          // pairFor: token
+        })
+      : [];
+
+    const walletSelector = this.actionSheetProvider.createInfoSheet(
+      'addTokenWallet',
+      {
+        wallets: eligibleWallets
+      }
+    );
+    walletSelector.present();
+    walletSelector.onDidDismiss(pairedWallet => {
+      console.log('------ pairedWallet: ', pairedWallet);
+      this.pairedWallet = pairedWallet;
+      // return this.createAndBindTokenWallet(pairedWallet, token);
+    });
   }
 }
