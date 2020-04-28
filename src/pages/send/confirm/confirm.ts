@@ -238,6 +238,7 @@ export class ConfirmPage {
       coin: this.navParams.data.coin,
       txp: {},
       tokenAddress: this.navParams.data.tokenAddress,
+      multisigAddress: this.navParams.data.multisigAddress,
       speedUpTx: this.isSpeedUpTx,
       fromSelectInputs: this.navParams.data.fromSelectInputs ? true : false,
       inputs: this.navParams.data.inputs
@@ -301,7 +302,7 @@ export class ConfirmPage {
   private getAmountDetails() {
     this.amount = this.decimalPipe.transform(
       this.tx.amount /
-        this.currencyProvider.getPrecision(this.coin).unitToSatoshi,
+      this.currencyProvider.getPrecision(this.coin).unitToSatoshi,
       '1.2-6'
     );
   }
@@ -414,7 +415,7 @@ export class ConfirmPage {
     return (
       this.wallet.cachedStatus &&
       this.wallet.cachedStatus.balance.totalAmount >=
-        this.tx.amount + this.tx.feeRate &&
+      this.tx.amount + this.tx.feeRate &&
       !this.tx.spendUnconfirmed
     );
   }
@@ -509,11 +510,11 @@ export class ConfirmPage {
       this.onGoingProcessProvider.set('calculatingFee');
       this.feeProvider
         .getFeeRate(
-          wallet.coin,
-          tx.network,
-          this.usingMerchantFee
-            ? this.currencyProvider.getMaxMerchantFee(wallet.coin)
-            : this.tx.feeLevel
+        wallet.coin,
+        tx.network,
+        this.usingMerchantFee
+          ? this.currencyProvider.getMaxMerchantFee(wallet.coin)
+          : this.tx.feeLevel
         )
         .then(feeRate => {
           let msg;
@@ -524,7 +525,7 @@ export class ConfirmPage {
             const maxAllowedFee = feeRate * 5;
             this.logger.info(
               `Using Merchant Fee: ${
-                tx.feeRate
+              tx.feeRate
               } vs. referent level (5 * feeRate) ${maxAllowedFee}`
             );
             const isUtxo = this.currencyProvider.isUtxoCoin(wallet.coin);
@@ -707,9 +708,9 @@ export class ConfirmPage {
           this.tx = tx;
           this.logger.debug(
             'Confirm. TX Fully Updated for wallet:' +
-              wallet.id +
-              ' Txp:' +
-              txp.id
+            wallet.id +
+            ' Txp:' +
+            txp.id
           );
           return resolve();
         })
@@ -950,6 +951,21 @@ export class ConfirmPage {
                   { address: output.toAddress, amount: output.amount }
                 ],
                 tokenAddress: tx.tokenAddress
+              });
+          }
+        }
+      }
+
+      if (tx.multisigAddress) {
+        txp.multisigAddress = tx.multisigAddress;
+        for (const output of txp.outputs) {
+          if (!output.data) {
+            output.data = this.bwcProvider
+              .getCore()
+              .Transactions.get({ chain: 'ETHMULTISIG' })
+              .encodeData({
+                addresses: this.navParams.data.multisigAddresses,
+                multisigAddress: tx.multisigAddress
               });
           }
         }
@@ -1200,9 +1216,9 @@ export class ConfirmPage {
       finishComment?: string;
       autoDismiss?: boolean;
     } = {
-      finishText: this.successText,
-      autoDismiss: !!redir
-    };
+        finishText: this.successText,
+        autoDismiss: !!redir
+      };
     if (onlyPublish) {
       const finishText = this.translate.instant('Payment Published');
       const finishComment = this.translate.instant(

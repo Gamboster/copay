@@ -183,6 +183,7 @@ export class SelectCurrencyPage {
     if (!_.isEmpty(pairedWallet)) {
       this.profileProvider.createTokenWallet(pairedWallet, token).then(() => {
         // store preferences for the paired eth wallet
+        console.log('-------------- pairedWallet: ', pairedWallet);
         this.walletProvider.updateRemotePreferences(pairedWallet);
         this.endProcess();
       });
