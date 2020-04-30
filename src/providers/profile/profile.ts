@@ -1667,6 +1667,34 @@ export class ProfileProvider {
     return walletClient;
   }
 
+  private _createMultisigEthWallet(ethWallet, multisgEthObj) {
+    this.logger.debug(
+      `Creating token wallet ${multisgEthObj.name} for ${ethWallet.id}:`
+    );
+    const multisigEthCredentials = ethWallet.credentials.getMultisigEthCredentials(
+      multisgEthObj
+    );
+    const walletClient = this.bwcProvider.getClient(null, {
+      baseUrl: ethWallet.baseUrl,
+      bp_partner: ethWallet.bp_partner,
+      bp_partner_version: ethWallet.bp_partner_version
+    });
+    console.log(
+      '------------ multisigEthCredentials: ',
+      multisigEthCredentials
+    );
+    walletClient.fromObj(multisigEthCredentials);
+    console.log('------------ walletClient: ', walletClient);
+    // Add the token info to the ethWallet.
+    ethWallet.preferences = ethWallet.preferences || {};
+    ethWallet.preferences.multisigEthAddresses =
+      ethWallet.preferences.multisigEthAddresses || [];
+    ethWallet.preferences.multisigEthAddresses.push(
+      multisgEthObj.contractAdress
+    );
+    return walletClient;
+  }
+
   public createTokenWallet(ethWallet, token): Promise<any> {
     if (_.isString(token)) {
       let tokens = this.currencyProvider.getAvailableTokens();
@@ -1674,6 +1702,14 @@ export class ProfileProvider {
     }
     const tokenWalletClient = this._createTokenWallet(ethWallet, token);
     return this.addAndBindWalletClient(tokenWalletClient);
+  }
+
+  public createMultisigEthWallet(ethWallet, multisgEthObj): Promise<any> {
+    const multisigEthWalletClient = this._createMultisigEthWallet(
+      ethWallet,
+      multisgEthObj
+    );
+    return this.addAndBindWalletClient(multisigEthWalletClient);
   }
 
   public createMultipleWallets(coins: string[], tokens = []): Promise<any> {

@@ -232,7 +232,8 @@ export class ConfirmPage {
       coin: this.navParams.data.coin,
       txp: {},
       tokenAddress: this.navParams.data.tokenAddress,
-      multisigAddress: this.navParams.data.multisigAddress,
+      multisigGnosisContractAddress: this.navParams.data
+        .multisigGnosisContractAddress,
       speedUpTx: this.isSpeedUpTx,
       fromSelectInputs: this.navParams.data.fromSelectInputs ? true : false,
       inputs: this.navParams.data.inputs
@@ -944,18 +945,19 @@ export class ConfirmPage {
         }
       }
 
-      if (tx.multisigAddress) {
-        txp.multisigAddress = tx.multisigAddress;
+      if (tx.multisigGnosisContractAddress) {
+        txp.multisigGnosisContractAddress = tx.multisigGnosisContractAddress;
         for (const output of txp.outputs) {
           if (!output.data) {
             output.data = this.bwcProvider
               .getCore()
               .Transactions.get({ chain: 'ETHMULTISIG' })
-              .encodeData({
+              .instantiateEncodeData({
                 addresses: this.navParams.data.multisigAddresses,
                 requiredConfirmations: this.navParams.data
                   .requiredConfirmations,
-                multisigAddress: tx.multisigAddress
+                multisigGnosisContractAddress: tx.multisigGnosisContractAddress,
+                dailyLimit: 0
               });
           }
         }
@@ -983,6 +985,29 @@ export class ConfirmPage {
           return reject(err);
         });
     });
+  }
+
+  private bwsEventHandler() {
+    const multisigEthObj = {
+      contractAddress: '0xF87e1f795414E8B3c241CAbCb2675937076E1951',
+      walletName: 'Hola',
+      n: this.navParams.data.requiredConfirmations,
+      m: this.navParams.data.multisigAddresses.length
+    };
+    const pairedWallet = this.wallet;
+    return this.createAndBindTokenWallet(pairedWallet, multisigEthObj);
+  }
+  public createAndBindTokenWallet(pairedWallet, multisigEthObj) {
+    if (!_.isEmpty(pairedWallet)) {
+      this.profileProvider
+        .createMultisigEthWallet(pairedWallet, multisigEthObj)
+        .then(() => {
+          // store preferences for the paired eth wallet
+          console.log('-------------- pairedWallet: ', pairedWallet);
+          this.walletProvider.updateRemotePreferences(pairedWallet);
+          this.events.publish('Local/WalletListChange');
+        });
+    }
   }
 
   private getInput(wallet): Promise<any> {
@@ -1236,6 +1261,10 @@ export class ConfirmPage {
         this.navCtrl.push(CoinbaseAccountPage, {
           id: this.fromCoinbase.accountId
         });
+      } else if (this.navParams.data.multisigGnosisContractAddress) {
+        setTimeout(() => {
+          this.bwsEventHandler();
+        }, 2000);
       } else {
         if (redir) {
           setTimeout(() => {
