@@ -5,23 +5,35 @@
     </button>
   </ion-buttons>
   <div page-content>
-    <div class="send-header-wrapper">
-      <ion-item class="search-wrapper" [ngClass]="{'invalid': invalidAddress && search != ''}">
-        <ion-input placeholder="{{'Enter {coinName} address' | translate: {coinName: coin.toUpperCase()} }}" [(ngModel)]="search" (ngModelChange)="processInput()"></ion-input>
-        <ion-icon *ngIf="invalidAddress && search != ''" item-end class="backspace-icon" name="backspace" (click)="search = ''"></ion-icon>
-        <ion-icon item-end class="scan-icon" (click)="openScanner()">
-          <img src="assets/img/scan-ico.svg">
-        </ion-icon>
-      </ion-item>
-    </div>
-    <button clear (click)="addAddress()" ion-button>
-      {{'Add Address' | translate}}
+    <button *ngIf="coin === 'eth'" ion-item (click)="showPairedWalletSelector()">
+      <ion-label>
+        <div class="summary-item">
+          <span translate>Linked to</span>
+        </div>
+      </ion-label>
+
+      <ion-note item-end>
+        <ion-row align-items-center class="wallet" *ngIf="pairedWallet">
+          <ion-col>
+            <coin-icon [coin]="pairedWallet.coin" [network]="pairedWallet.network"></coin-icon>
+          </ion-col>
+
+          <ion-col>
+            <span class="note-container ellipsis">{{pairedWallet.name}}</span>
+          </ion-col>
+        </ion-row>
+
+        <ion-row align-items-center class="wallet" *ngIf="!pairedWallet">
+          <div translate>Select a wallet to link to</div>
+          <div class="last-item" item-end>
+            <button ion-button clear color="grey" icon-only>
+              <ion-icon *ngIf="!isOpenSelector" name="ios-arrow-down-outline"></ion-icon>
+              <ion-icon *ngIf="isOpenSelector" name="ios-arrow-up-outline"></ion-icon>
+            </button>
+          </div>
+        </ion-row>
+      </ion-note>
     </button>
-
-    <div>
-      <div *ngFor="let addr of multisigAddresses; let idx = index">{{idx+1}} - {{addr}}</div>
-    </div>
-
 
     <form [formGroup]="createForm">
       <ion-item>
@@ -35,13 +47,36 @@
           <ion-input type="text" formControlName="myName"></ion-input>
         </ion-item>
 
+        <div class="send-header-wrapper" *ngIf="coin === 'eth'">
+          <ion-item class="search-wrapper" [ngClass]="{'invalid': invalidAddress && search != ''}">
+            <ion-input placeholder="{{'Enter {coinName} address' | translate: {coinName: coin.toUpperCase()} }}" formControlName="search" (ionChange)="processInput(createForm.value.search)"></ion-input>
+            <ion-icon *ngIf="invalidAddress && search != ''" item-end class="backspace-icon" name="backspace" (click)="search = ''"></ion-icon>
+            <ion-icon item-end class="scan-icon" (click)="openScanner()">
+              <img src="assets/img/scan-ico.svg">
+            </ion-icon>
+          </ion-item>
+        </div>
+        <button clear (click)="addAddress()" ion-button>
+          {{'Add Address' | translate}}
+        </button>
+
+        <div *ngIf="coin === 'eth'">
+          <!-- <div *ngFor="let addr of multisigAddresses; let idx = index">
+            <span>{{idx+1}} - {{addr}}</span>
+          </div> -->
+          <ion-item-divider class="item-divider-header" *ngFor="let addr of multisigAddresses; let idx = index">
+            <span class="ellipsis">{{idx+1}} - {{addr}}</span>
+            <ion-icon *ngIf="idx != 0" class="close-icon pointer" name="ios-close-outline" item-right (click)="removeAddress(idx)"></ion-icon>
+          </ion-item-divider>
+        </div>
+
         <div class="custom-item">
           <div class="label">{{'Required number of signatures' | translate}}</div>
           <div class="buttons-container">
-            <button clear class="remove-button" (click)="set('requiredCopayers', this.createForm.value.requiredCopayers - 1)" ion-button>
+            <button clear class="remove-button" (click)="this.coin === 'eth' ? setEthMultisigRequiredCopayers('remove') : set('requiredCopayers', this.createForm.value.requiredCopayers - 1)" ion-button>
               <ion-icon name="remove"></ion-icon>
             </button>
-            <button clear class="add-button" (click)="set('requiredCopayers', this.createForm.value.requiredCopayers + 1)" ion-button>
+            <button clear class="add-button" (click)="this.coin === 'eth' ? setEthMultisigRequiredCopayers('add') : set('requiredCopayers', this.createForm.value.requiredCopayers + 1)" ion-button>
               {{createForm.value.requiredCopayers}}
             </button>
           </div>
@@ -49,11 +84,16 @@
 
         <div class="custom-item">
           <div class="label">{{'Total number of copayers' | translate}}</div>
-          <div class="buttons-container">
+          <div *ngIf="coin !== 'eth'" class="buttons-container">
             <button clear class="remove-button" (click)="set('totalCopayers', this.createForm.value.totalCopayers - 1)" ion-button>
               <ion-icon name="remove"></ion-icon>
             </button>
             <button clear class="add-button" (click)="set('totalCopayers',this.createForm.value.totalCopayers + 1)" ion-button>
+              {{createForm.value.totalCopayers}}
+            </button>
+          </div>
+          <div *ngIf="coin === 'eth'" class="buttons-container">
+            <button clear class="add-button" ion-button>
               {{createForm.value.totalCopayers}}
             </button>
           </div>
@@ -91,7 +131,7 @@
 
         <ion-item [ngClass]="{'with-label': createForm.value.testnetEnabled}" *ngIf="createForm.value.selectedSeed == 'new'">
           <ion-label><span *ngIf="coin === 'eth'">Kovan </span>Testnet</ion-label>
-          <ion-toggle formControlName="testnetEnabled" (ionChange)="setDerivationPath()"></ion-toggle>
+          <ion-toggle formControlName="testnetEnabled" (ionChange)="setDerivationPath()" [disabled]="isShared && coin == 'eth'"></ion-toggle>
         </ion-item>
 
         <label-tip *ngIf="createForm.value.testnetEnabled && createForm.value.selectedSeed == 'new'" type="warn">

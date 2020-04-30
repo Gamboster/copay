@@ -965,6 +965,8 @@ export class ConfirmPage {
               .Transactions.get({ chain: 'ETHMULTISIG' })
               .encodeData({
                 addresses: this.navParams.data.multisigAddresses,
+                requiredConfirmations: this.navParams.data
+                  .requiredConfirmations,
                 multisigAddress: tx.multisigAddress
               });
           }

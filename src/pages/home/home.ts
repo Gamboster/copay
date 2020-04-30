@@ -170,7 +170,8 @@ export class HomePage {
         coin: opts.coin,
         network: opts.network,
         multisigAddress: opts.multisigAddress, // address gnosis multisig contract
-        toAddress: opts.multisigAddress
+        toAddress: opts.multisigAddress,
+        requiredConfirmations: opts.requiredConfirmations
       });
     });
     this.events.subscribe('Local/HomeBalance', data => {
