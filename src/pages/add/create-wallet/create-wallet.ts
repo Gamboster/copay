@@ -516,7 +516,8 @@ export class CreateWalletPage implements OnInit {
         requiredConfirmations: this.createForm.value.requiredCopayers,
         coin: this.coin,
         network: this.createForm.value.testnetEnabled ? 'testnet' : 'livenet',
-        multisigAddress: '0x2C992817e0152A65937527B774c7A99a84603045' // address gnosis multisig contract
+        multisigGnosisContractAddress:
+          '0x2C992817e0152A65937527B774c7A99a84603045' // address gnosis multisig contract
       });
     });
   }

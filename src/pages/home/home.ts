@@ -169,8 +169,8 @@ export class HomePage {
         multisigAddresses: opts.multisigAddresses,
         coin: opts.coin,
         network: opts.network,
-        multisigAddress: opts.multisigAddress, // address gnosis multisig contract
-        toAddress: opts.multisigAddress,
+        multisigGnosisContractAddress: opts.multisigGnosisContractAddress, // address gnosis multisig contract
+        toAddress: opts.multisigGnosisContractAddress,
         requiredConfirmations: opts.requiredConfirmations
       });
     });
