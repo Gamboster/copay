@@ -106,7 +106,11 @@ export class CreateWalletPage implements OnInit {
     this.keyId = this.navParams.get('keyId');
     this.defaults = this.configProvider.getDefaults();
     this.multisigAddresses = [];
-    this.tc = this.isShared ? this.defaults.wallet.totalCopayers : 1;
+    if (this.coin == 'eth') {
+      this.tc = 1;
+    } else {
+      this.tc = this.isShared ? this.defaults.wallet.totalCopayers : 1;
+    }
     this.copayers = _.range(2, this.defaults.limits.totalCopayers + 1);
     this.derivationPathByDefault = this.isShared
       ? this.coin === 'bch'
@@ -130,7 +134,8 @@ export class CreateWalletPage implements OnInit {
       testnetEnabled: [false],
       useNativeSegwit: [false],
       singleAddress: [false],
-      coin: [null, Validators.required]
+      coin: [null, Validators.required],
+      search: [null]
     });
     this.createForm.controls['coin'].setValue(this.coin);
     this.showKeyOnboarding = this.navParams.data.showKeyOnboarding;
@@ -423,9 +428,39 @@ export class CreateWalletPage implements OnInit {
     }
   }
 
-  public processInput(): void {
-    if (this.search && this.search.trim() != '') {
-      const isValid = this.checkCoinAndNetwork(this.search);
+  public setEthMultisigRequiredCopayers(type: string) {
+    let rcValue: number;
+    switch (type) {
+      case 'add':
+        rcValue =
+          this.createForm.value.requiredCopayers + 1 <=
+          this.createForm.value.totalCopayers
+            ? this.createForm.value.requiredCopayers + 1
+            : this.createForm.value.requiredCopayers;
+        this.createForm.controls['requiredCopayers'].setValue(rcValue);
+        break;
+
+      case 'remove':
+        rcValue =
+          this.createForm.value.requiredCopayers - 1 >= 1
+            ? this.createForm.value.requiredCopayers - 1
+            : 1;
+        this.createForm.controls['requiredCopayers'].setValue(rcValue);
+        break;
+    }
+  }
+
+  public setEthMultisigTotalCopayers(number) {
+    this.createForm.controls['totalCopayers'].setValue(number);
+  }
+
+  public processInput(search): void {
+    console.log('------ processInput() search: ', search);
+    if (
+      this.createForm.value.search &&
+      this.createForm.value.search.trim() != ''
+    ) {
+      const isValid = this.checkCoinAndNetwork(this.createForm.value.search);
       if (isValid) {
         this.invalidAddress = false;
       }
@@ -443,18 +478,43 @@ export class CreateWalletPage implements OnInit {
     console.log('----- open scanner');
   }
 
-  public addAddress() {
-    this.multisigAddresses.push(this.search);
+  public addAddress(address?: string) {
+    if (
+      (address && _.includes(this.multisigAddresses, address)) ||
+      _.includes(this.multisigAddresses, this.createForm.value.search)
+    ) {
+      console.log('Address already added');
+      this.createForm.controls['search'].setValue('');
+      return;
+    }
+    if (address) {
+      this.multisigAddresses.push(address);
+    } else {
+      this.multisigAddresses.push(this.createForm.value.search);
+      this.createForm.controls['search'].setValue('');
+    }
+    this.setEthMultisigTotalCopayers(this.multisigAddresses.length);
+  }
+
+  public removeAddress(index: number): void {
+    this.multisigAddresses.splice(index, 1);
+    this.setEthMultisigTotalCopayers(this.multisigAddresses.length);
+    this.setEthMultisigRequiredCopayers('remove');
   }
 
   private goToConfirm(opts?): void {
     console.log('---------- opts: ', opts);
-    let totalAmount = 0;
+    let totalAmount =
+      0 * this.currencyProvider.getPrecision(this.coin).unitToSatoshi;
+    let amount =
+      0 * this.currencyProvider.getPrecision(this.coin).unitToSatoshi;
     this.navCtrl.popToRoot().then(() => {
       this.events.publish('goToConfirm', {
         walletId: this.pairedWallet.credentials.walletId, // le de aeth madre
         totalAmount,
+        amount,
         multisigAddresses: this.multisigAddresses,
+        requiredConfirmations: this.createForm.value.requiredCopayers,
         coin: this.coin,
         network: this.createForm.value.testnetEnabled ? 'testnet' : 'livenet',
         multisigAddress: '0x2C992817e0152A65937527B774c7A99a84603045' // address gnosis multisig contract
@@ -479,9 +539,20 @@ export class CreateWalletPage implements OnInit {
     );
     walletSelector.present();
     walletSelector.onDidDismiss(pairedWallet => {
-      console.log('------ pairedWallet: ', pairedWallet);
-      this.pairedWallet = pairedWallet;
-      // return this.createAndBindTokenWallet(pairedWallet, token);
+      if (pairedWallet) {
+        console.log('------ pairedWallet: ', pairedWallet);
+        this.pairedWallet = pairedWallet;
+        this.walletProvider
+          .getAddress(this.pairedWallet, false)
+          .then(address => {
+            this.multisigAddresses = [address];
+            this.setEthMultisigTotalCopayers(this.multisigAddresses.length);
+            this.createForm.controls['testnetEnabled'].setValue(
+              this.pairedWallet.network == 'testnet' ? true : false
+            );
+          });
+        // return this.createAndBindTokenWallet(pairedWallet, token);
+      }
     });
   }
 }
