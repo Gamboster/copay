@@ -114,13 +114,17 @@
       <span sheet-button-text translate>GOT IT</span>
     </info-sheet-template>
 
-    <info-sheet-template *ngSwitchCase="'addTokenWallet'" type="{{ params.wallets[0] ? 'info' : 'warning' }}">
+    <info-sheet-template *ngSwitchCase="'linkEthWallet'" type="{{ params.wallets[0] ? 'info' : 'warning' }}">
       <span *ngIf="params.wallets && params.wallets.length > 0" sheet-title-text translate>Select an Ethereum Wallet</span>
       <span *ngIf="!params.wallets[0]" sheet-title-text translate>Ethereum wallet required</span>
-      <span *ngIf="params.wallets && params.wallets.length > 0" sheet-text translate>Which Ethereum wallet would you like this token to use for transaction costs?</span>
+      <span *ngIf="params.wallets && params.wallets.length > 0 && !params.isMultisig" sheet-text translate>Which Ethereum wallet would you like this token to use for transaction costs?</span>
+      <span *ngIf="params.wallets && params.wallets.length > 0 && params.isMultisig" sheet-text translate>Which Ethereum wallet would you like this multisig to use for transaction costs?</span>
 
-      <span *ngIf="!params.wallets[0]" sheet-text translate>
+      <span *ngIf="!params.wallets[0] && !params.isMultisig" sheet-text translate>
         In order to create a token wallet, an Ethereum (ETH) wallet is required. Please create an ETH wallet first. Only one {{ params.token.name }} wallet is allowed per ETH wallet.
+      </span>
+      <span *ngIf="!params.wallets[0] && params.isMultisig" sheet-text translate>
+        In order to create this multisig wallet, an Ethereum (ETH) wallet is required. Please create an ETH wallet first.
       </span>
 
       <span sheet-text>

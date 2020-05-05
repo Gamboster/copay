@@ -1249,6 +1249,23 @@
       color: $text-color-dark-theme;
     }
   }
+  page-create-wallet {
+    .linked-wallet {
+      color: $text-color-dark-theme;
+      background-color: $bg-color-dark-theme;
+    }
+    .multisig-input {
+      background-color: $bg-color-dark-theme;
+      .search-wrapper {
+        background-color: $bg-color-dark-theme-2;
+        color: $text-color-dark-theme-2;
+        &.invalid {
+          border: 1px solid color($colors, error);
+          color: color($colors, error);
+        }
+      }
+    }
+  }
   email-component {
     .title {
       color: $text-color-dark-theme;
