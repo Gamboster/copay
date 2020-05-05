@@ -200,7 +200,7 @@ export class SelectCurrencyPage {
       : [];
 
     const walletSelector = this.actionSheetProvider.createInfoSheet(
-      'addTokenWallet',
+      'linkEthWallet',
       {
         wallets: eligibleWallets,
         token

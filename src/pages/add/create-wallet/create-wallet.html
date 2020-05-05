@@ -5,7 +5,7 @@
     </button>
   </ion-buttons>
   <div page-content>
-    <button *ngIf="coin === 'eth'" ion-item (click)="showPairedWalletSelector()">
+    <button class="linked-wallet" *ngIf="coin === 'eth'" ion-item (click)="showPairedWalletSelector()">
       <ion-label>
         <div class="summary-item">
           <span translate>Linked to</span>
@@ -47,16 +47,16 @@
           <ion-input type="text" formControlName="myName"></ion-input>
         </ion-item>
 
-        <div class="send-header-wrapper" *ngIf="coin === 'eth'">
-          <ion-item class="search-wrapper" [ngClass]="{'invalid': invalidAddress && search != ''}">
+        <div class="multisig-input" *ngIf="coin === 'eth'">
+          <ion-item class="search-wrapper" [ngClass]="{'invalid': invalidAddress && createForm.value.search != ''}">
             <ion-input placeholder="{{'Enter {coinName} address' | translate: {coinName: coin.toUpperCase()} }}" formControlName="search" (ionChange)="processInput(createForm.value.search)"></ion-input>
-            <ion-icon *ngIf="invalidAddress && search != ''" item-end class="backspace-icon" name="backspace" (click)="search = ''"></ion-icon>
+            <ion-icon *ngIf="invalidAddress && createForm.value.search != ''" item-end class="backspace-icon" name="backspace" (click)="cleanSearch()"></ion-icon>
             <ion-icon item-end class="scan-icon" (click)="openScanner()">
               <img src="assets/img/scan-ico.svg">
             </ion-icon>
           </ion-item>
         </div>
-        <button clear (click)="addAddress()" ion-button>
+        <button *ngIf="!invalidAddress && createForm.value.search != ''" clear (click)="addAddress()" ion-button>
           {{'Add Address' | translate}}
         </button>
 

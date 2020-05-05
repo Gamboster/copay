@@ -11,6 +11,7 @@ import * as _ from 'lodash';
 
 // Providers
 import { ActionSheetProvider } from '../../../providers/action-sheet/action-sheet';
+import { AddressProvider } from '../../../providers/address/address';
 import { BwcErrorProvider } from '../../../providers/bwc-error/bwc-error';
 import { BwcProvider } from '../../../providers/bwc/bwc';
 import { ConfigProvider } from '../../../providers/config/config';
@@ -18,6 +19,7 @@ import { Coin, CurrencyProvider } from '../../../providers/currency/currency';
 import { DerivationPathHelperProvider } from '../../../providers/derivation-path-helper/derivation-path-helper';
 import { ErrorsProvider } from '../../../providers/errors/errors';
 import { ExternalLinkProvider } from '../../../providers/external-link/external-link';
+import { IncomingDataProvider } from '../../../providers/incoming-data/incoming-data';
 import { Logger } from '../../../providers/logger/logger';
 import { OnGoingProcessProvider } from '../../../providers/on-going-process/on-going-process';
 import { PersistenceProvider } from '../../../providers/persistence/persistence';
@@ -30,6 +32,7 @@ import {
 
 // Pages
 import { CopayersPage } from '../../add/copayers/copayers';
+import { ScanPage } from '../../scan/scan';
 import { KeyOnboardingPage } from '../../settings/key-settings/key-onboarding/key-onboarding';
 import { WalletDetailsPage } from '../../wallet-details/wallet-details';
 @Component({
@@ -72,7 +75,6 @@ export class CreateWalletPage implements OnInit {
   public createForm: FormGroup;
 
   public multisigAddresses: string[];
-  public search: string;
   public invalidAddress: boolean;
   public pairedWallet: any;
 
@@ -96,7 +98,9 @@ export class CreateWalletPage implements OnInit {
     private modalCtrl: ModalController,
     private persistenceProvider: PersistenceProvider,
     private errorsProvider: ErrorsProvider,
-    private events: Events
+    private events: Events,
+    private addressProvider: AddressProvider,
+    private incomingDataProvider: IncomingDataProvider
   ) {
     this.okText = this.translate.instant('Ok');
     this.cancelText = this.translate.instant('Cancel');
@@ -135,10 +139,15 @@ export class CreateWalletPage implements OnInit {
       useNativeSegwit: [false],
       singleAddress: [false],
       coin: [null, Validators.required],
-      search: [null]
+      search: ['']
     });
     this.createForm.controls['coin'].setValue(this.coin);
     this.showKeyOnboarding = this.navParams.data.showKeyOnboarding;
+
+    this.events.subscribe(
+      'Local/AddressScanEthMultisig',
+      this.updateAddressHandler
+    );
 
     this.setTotalCopayers(this.tc);
     this.updateRCSelect(this.tc);
@@ -153,6 +162,18 @@ export class CreateWalletPage implements OnInit {
       }
     }
   }
+
+  ngOnDestroy() {
+    this.events.unsubscribe(
+      'Local/AddressScanEthMultisig',
+      this.updateAddressHandler
+    );
+  }
+
+  private updateAddressHandler: any = data => {
+    this.createForm.controls['search'].setValue(data.value);
+    this.processInput();
+  };
 
   public setTotalCopayers(n: number): void {
     this.createForm.controls['totalCopayers'].setValue(n);
@@ -433,7 +454,7 @@ export class CreateWalletPage implements OnInit {
       case 'add':
         rcValue =
           this.createForm.value.requiredCopayers + 1 <=
-          this.createForm.value.totalCopayers
+            this.createForm.value.totalCopayers
             ? this.createForm.value.requiredCopayers + 1
             : this.createForm.value.requiredCopayers;
         this.createForm.controls['requiredCopayers'].setValue(rcValue);
@@ -453,28 +474,58 @@ export class CreateWalletPage implements OnInit {
     this.createForm.controls['totalCopayers'].setValue(number);
   }
 
-  public processInput(search): void {
-    console.log('------ processInput() search: ', search);
+  public processInput(): void {
+    const validDataTypeMap = ['EthereumAddress'];
     if (
       this.createForm.value.search &&
       this.createForm.value.search.trim() != ''
     ) {
-      const isValid = this.checkCoinAndNetwork(this.createForm.value.search);
-      if (isValid) {
-        this.invalidAddress = false;
+      const parsedData = this.incomingDataProvider.parseData(
+        this.createForm.value.search
+      );
+      if (parsedData && _.indexOf(validDataTypeMap, parsedData.type) != -1) {
+        const isValid = this.checkCoinAndNetwork(this.createForm.value.search);
+        if (isValid) {
+          this.invalidAddress = false;
+        } else {
+          this.invalidAddress = true;
+          const msg = this.translate.instant(
+            'The wallet you are using does not match the network and/or the currency of the address provided'
+          );
+          this.showErrorMessage(msg);
+        }
+      } else {
+        this.invalidAddress = true;
       }
-    } else {
-      this.invalidAddress = true;
     }
   }
 
-  private checkCoinAndNetwork(address: string) {
-    console.log('----- address:', address);
-    return true;
+  public cleanSearch(): void {
+    this.createForm.controls['search'].setValue('');
   }
 
-  public openScanner() {
-    console.log('----- open scanner');
+  private checkCoinAndNetwork(address: string): boolean {
+    const addrData = this.addressProvider.getCoinAndNetwork(
+      address,
+      this.pairedWallet.network
+    );
+    const isValid = Boolean(
+      addrData &&
+      this.pairedWallet.coin == addrData.coin &&
+      this.pairedWallet.network == addrData.network
+    );
+    return isValid;
+  }
+
+  private showErrorMessage(msg: string) {
+    const title = this.translate.instant('Error');
+    this.errorsProvider.showDefaultError(msg, title, () => {
+      this.createForm.controls['search'].setValue('');
+    });
+  }
+
+  public openScanner(): void {
+    this.navCtrl.push(ScanPage, { fromEthMultisig: true });
   }
 
   public addAddress(address?: string) {
@@ -482,7 +533,8 @@ export class CreateWalletPage implements OnInit {
       (address && _.includes(this.multisigAddresses, address)) ||
       _.includes(this.multisigAddresses, this.createForm.value.search)
     ) {
-      console.log('Address already added');
+      const msg = this.translate.instant('Address already added');
+      this.showErrorMessage(msg);
       this.createForm.controls['search'].setValue('');
       return;
     }
@@ -525,16 +577,16 @@ export class CreateWalletPage implements OnInit {
   public showPairedWalletSelector() {
     const eligibleWallets = this.keyId
       ? this.profileProvider.getWalletsFromGroup({
-          keyId: this.keyId,
-          coin: 'eth'
-          // pairFor: token
-        })
+        keyId: this.keyId,
+        coin: 'eth'
+      })
       : [];
 
     const walletSelector = this.actionSheetProvider.createInfoSheet(
-      'addTokenWallet',
+      'linkEthWallet',
       {
-        wallets: eligibleWallets
+        wallets: eligibleWallets,
+        isMultisig: true
       }
     );
     walletSelector.present();
