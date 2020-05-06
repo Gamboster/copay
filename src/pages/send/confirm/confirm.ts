@@ -94,6 +94,7 @@ export class ConfirmPage {
 
   public mainTitle: string;
   public isSpeedUpTx: boolean;
+  private fromAddress;
 
   // // Card flags for zen desk chat support
   // private isCardPurchase: boolean;
@@ -991,6 +992,7 @@ export class ConfirmPage {
           }
 
           txp.from = address;
+          this.setFromAddress(txp.from);
           this.walletProvider
             .createTx(wallet, txp)
             .then(ctxp => {
@@ -1006,9 +1008,25 @@ export class ConfirmPage {
     });
   }
 
-  private bwsEventHandler() {
+  private setFromAddress(address) {
+    this.fromAddress = address;
+  }
+  private async bwsEventHandler() {
+    const opts = {
+      sender: this.fromAddress,
+      network: this.wallet.network
+    };
+    console.log('##########################opts', opts);
+    const multisigContractInstantiationInfo = await this.walletProvider.getMultisigContractInstantiationInfo(
+      this.wallet,
+      opts
+    );
+    console.log(
+      '#################################multisigContractInstantiationInfo',
+      multisigContractInstantiationInfo
+    );
     const multisigEthObj = {
-      contractAddress: '0xF87e1f795414E8B3c241CAbCb2675937076E1951',
+      contractAddress: multisigContractInstantiationInfo.instantiation,
       walletName: 'Hola',
       n: this.navParams.data.requiredConfirmations,
       m: this.navParams.data.multisigAddresses.length
@@ -1016,6 +1034,7 @@ export class ConfirmPage {
     const pairedWallet = this.wallet;
     return this.createAndBindTokenWallet(pairedWallet, multisigEthObj);
   }
+
   public createAndBindTokenWallet(pairedWallet, multisigEthObj) {
     if (!_.isEmpty(pairedWallet)) {
       this.profileProvider
@@ -1282,7 +1301,7 @@ export class ConfirmPage {
       } else if (this.navParams.data.multisigGnosisContractAddress) {
         setTimeout(() => {
           this.bwsEventHandler();
-        }, 2000);
+        }, 20000);
       } else {
         if (redir) {
           setTimeout(() => {

@@ -366,7 +366,12 @@ export class WalletProvider {
           const { token } = wallet.credentials;
 
           wallet.getStatus(
-            { tokenAddress: token ? token.address : '' },
+            {
+              tokenAddress: token ? token.address : '',
+              multisigContractAddress: token
+                ? token.multisigContractAddress
+                : ''
+            },
             (err, status) => {
               if (err) {
                 if (err instanceof this.errors.NOT_AUTHORIZED) {
@@ -717,7 +722,8 @@ export class WalletProvider {
         {
           skip,
           limit,
-          tokenAddress: token ? token.address : ''
+          tokenAddress: token ? token.address : '',
+          multisigContractAddress: token ? token.multisigContractAddress : ''
         },
         (err: Error, txsFromServer) => {
           if (err) return reject(err);
@@ -1132,6 +1138,16 @@ export class WalletProvider {
       wallet.getTx(txpid, (err, txp) => {
         if (err) return reject(err);
         return resolve(txp);
+      });
+    });
+  }
+
+  public getMultisigContractInstantiationInfo(wallet, opts): Promise<any> {
+    return new Promise((resolve, reject) => {
+      opts = opts || {};
+      wallet.getMultisigContractInstantiationInfo(opts, (err, res) => {
+        if (err) return reject(err);
+        return resolve(res);
       });
     });
   }

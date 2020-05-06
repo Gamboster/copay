@@ -67,7 +67,10 @@ export class WalletAddressesPage {
       .then(allAddresses => {
         const { token } = this.wallet.credentials;
         this.walletProvider
-          .getBalance(this.wallet, { tokenAddress: token ? token.address : '' })
+          .getBalance(this.wallet, {
+            tokenAddress: token ? token.address : '',
+            multisigContractAddress: token ? token.multisigContractAddress : ''
+          })
           .then(resp => {
             this.withBalance = resp.byAddress;
 
