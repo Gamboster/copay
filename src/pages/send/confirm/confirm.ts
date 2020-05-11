@@ -94,7 +94,7 @@ export class ConfirmPage {
 
   public mainTitle: string;
   public isSpeedUpTx: boolean;
-  private fromAddress;
+  // private fromAddress;
 
   // // Card flags for zen desk chat support
   // private isCardPurchase: boolean;
@@ -992,7 +992,7 @@ export class ConfirmPage {
           }
 
           txp.from = address;
-          this.setFromAddress(txp.from);
+          // this.setFromAddress(txp.from);
           this.walletProvider
             .createTx(wallet, txp)
             .then(ctxp => {
@@ -1008,32 +1008,32 @@ export class ConfirmPage {
     });
   }
 
-  private setFromAddress(address) {
-    this.fromAddress = address;
-  }
-  private async bwsEventHandler() {
-    const opts = {
-      sender: this.fromAddress,
-      network: this.wallet.network
-    };
-    console.log('##########################opts', opts);
-    const multisigContractInstantiationInfo = await this.walletProvider.getMultisigContractInstantiationInfo(
-      this.wallet,
-      opts
-    );
-    console.log(
-      '#################################multisigContractInstantiationInfo',
-      multisigContractInstantiationInfo
-    );
-    const multisigEthObj = {
-      contractAddress: multisigContractInstantiationInfo.instantiation,
-      walletName: 'Hola',
-      n: this.navParams.data.requiredConfirmations,
-      m: this.navParams.data.multisigAddresses.length
-    };
-    const pairedWallet = this.wallet;
-    return this.createAndBindTokenWallet(pairedWallet, multisigEthObj);
-  }
+  // private setFromAddress(address) {
+  //   this.fromAddress = address;
+  // }
+  // private async bwsEventHandler() {
+  //   const opts = {
+  //     sender: this.fromAddress,
+  //     network: this.wallet.network
+  //   };
+  //   console.log('##########################opts', opts);
+  //   const multisigContractInstantiationInfo = await this.walletProvider.getMultisigContractInstantiationInfo(
+  //     this.wallet,
+  //     opts
+  //   );
+  //   console.log(
+  //     '#################################multisigContractInstantiationInfo',
+  //     multisigContractInstantiationInfo
+  //   );
+  //   const multisigEthObj = {
+  //     contractAddress: multisigContractInstantiationInfo.instantiation,
+  //     walletName: 'Hola',
+  //     n: this.navParams.data.requiredConfirmations,
+  //     m: this.navParams.data.multisigAddresses.length
+  //   };
+  //   const pairedWallet = this.wallet;
+  //   return this.createAndBindTokenWallet(pairedWallet, multisigEthObj);
+  // }
 
   public createAndBindTokenWallet(pairedWallet, multisigEthObj) {
     if (!_.isEmpty(pairedWallet)) {
@@ -1213,6 +1213,8 @@ export class ConfirmPage {
           });
         }
         let redir;
+        console.log('#######################################txid', txp);
+        console.log('#######################################txid', txp.id);
         if (txp.payProUrl && txp.payProUrl.includes('redir=wc')) {
           redir = 'wc';
         }
@@ -1299,9 +1301,9 @@ export class ConfirmPage {
           id: this.fromCoinbase.accountId
         });
       } else if (this.navParams.data.multisigGnosisContractAddress) {
-        setTimeout(() => {
-          this.bwsEventHandler();
-        }, 20000);
+        // setTimeout(() => {
+        //   this.bwsEventHandler();
+        // }, 20000);
       } else {
         if (redir) {
           setTimeout(() => {
