@@ -651,6 +651,57 @@ export class WalletsPage {
     });
   }
 
+  public async getMultisigContractInstantiationInfo() {
+    const opts = {
+      sender: '0xA18fbB546700aE30b83B06EE754ab8162071815F', // this.fromAddress,
+      network: 'testnet', // this.wallet.network
+      coin: 'eth'
+    };
+    const wallet = this.profileProvider.getWallet(
+      '8666a3a2-11b8-488e-a676-7bab60bafe1d'
+    );
+    console.log('##########################opts', opts);
+    const multisigContractInstantiationInfo = await this.walletProvider.getMultisigContractInstantiationInfo(
+      wallet,
+      opts
+    );
+    console.log(
+      '#################################multisigContractInstantiationInfo',
+      multisigContractInstantiationInfo
+    );
+    const txId =
+      '0xc2127eccceea0168a51c2857d8065f9d3ae6c4bc625cdde17a9e0be701289981';
+    const contract = multisigContractInstantiationInfo.filter(contract => {
+      console.log(
+        '######################contract.transactionHash',
+        contract.transactionHash
+      );
+      return contract.transactionHash === txId;
+    });
+    console.log(contract);
+    console.log(contract[0]);
+    const multisigEthObj = {
+      contractAddress: contract[0].instantiation,
+      walletName: 'Hola',
+      n: 1, // this.navParams.data.requiredConfirmations,
+      m: 1 // this.navParams.data.multisigAddresses.length
+    };
+    const pairedWallet = wallet;
+    return this.createAndBindTokenWallet(pairedWallet, multisigEthObj);
+  }
+  public createAndBindTokenWallet(pairedWallet, multisigEthObj) {
+    if (!_.isEmpty(pairedWallet)) {
+      this.profileProvider
+        .createMultisigEthWallet(pairedWallet, multisigEthObj)
+        .then(() => {
+          // store preferences for the paired eth wallet
+          console.log('-------------- pairedWallet: ', pairedWallet);
+          this.walletProvider.updateRemotePreferences(pairedWallet);
+          this.events.publish('Local/WalletListChange');
+        });
+    }
+  }
+
   public openBackupPage(keyId) {
     this.navCtrl.push(BackupKeyPage, {
       keyId
