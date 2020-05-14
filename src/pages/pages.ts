@@ -123,6 +123,7 @@ import { WalletTransactionHistoryPage } from '../pages/settings/wallet-settings/
 
 /* Send */
 import { AmountPage } from '../pages/send/amount/amount';
+import { CreateEthMultisigPage } from '../pages/add/create-eth-multisig/create-eth-multisig';
 import { ConfirmPage } from '../pages/send/confirm/confirm';
 import { MultiSendPage } from '../pages/send/multi-send/multi-send';
 import { SelectInputsPage } from '../pages/send/select-inputs/select-inputs';
@@ -168,6 +169,7 @@ export const PAGES = [
   JoinWalletPage,
   BackupGamePage,
   BackupKeyPage,
+  CreateEthMultisigPage,
   ConfirmPage,
   MultiSendPage,
   TransferToModalPage,

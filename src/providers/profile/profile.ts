@@ -1674,12 +1674,12 @@ export class ProfileProvider {
     return walletClient;
   }
 
-  private _createMultisigEthWallet(ethWallet, multisgEthObj) {
+  private _createMultisigEthWallet(ethWallet, multisigEthInfo) {
     this.logger.debug(
-      `Creating token wallet ${multisgEthObj.name} for ${ethWallet.id}:`
+      `Creating token wallet ${multisigEthInfo.name} for ${ethWallet.id}:`
     );
     const multisigEthCredentials = ethWallet.credentials.getMultisigEthCredentials(
-      multisgEthObj
+      multisigEthInfo
     );
     const walletClient = this.bwcProvider.getClient(null, {
       baseUrl: ethWallet.baseUrl,
@@ -1697,7 +1697,7 @@ export class ProfileProvider {
     ethWallet.preferences.multisigEthAddresses =
       ethWallet.preferences.multisigEthAddresses || [];
     ethWallet.preferences.multisigEthAddresses.push(
-      multisgEthObj.contractAdress
+      multisigEthInfo.contractAdress
     );
     return walletClient;
   }
@@ -1711,10 +1711,10 @@ export class ProfileProvider {
     return this.addAndBindWalletClient(tokenWalletClient);
   }
 
-  public createMultisigEthWallet(ethWallet, multisgEthObj): Promise<any> {
+  public createMultisigEthWallet(ethWallet, multisigEthInfo): Promise<any> {
     const multisigEthWalletClient = this._createMultisigEthWallet(
       ethWallet,
-      multisgEthObj
+      multisigEthInfo
     );
     return this.addAndBindWalletClient(multisigEthWalletClient);
   }

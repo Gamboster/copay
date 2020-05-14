@@ -363,13 +363,12 @@ export class WalletProvider {
           }
 
           tries = tries || 0;
-          const { token } = wallet.credentials;
-
+          const { token, multisigEthInfo } = wallet.credentials;
           wallet.getStatus(
             {
               tokenAddress: token ? token.address : '',
-              multisigContractAddress: token
-                ? token.multisigContractAddress
+              multisigContractAddress: multisigEthInfo
+                ? multisigEthInfo.multisigContractAddress
                 : ''
             },
             (err, status) => {
@@ -716,14 +715,15 @@ export class WalletProvider {
         shouldContinue: res.length >= limit
       };
 
-      const { token } = wallet.credentials;
-
+      const { token, multisigEthInfo } = wallet.credentials;
       wallet.getTxHistory(
         {
           skip,
           limit,
           tokenAddress: token ? token.address : '',
-          multisigContractAddress: token ? token.multisigContractAddress : ''
+          multisigContractAddress: multisigEthInfo
+            ? multisigEthInfo.multisigContractAddress
+            : ''
         },
         (err: Error, txsFromServer) => {
           if (err) return reject(err);
