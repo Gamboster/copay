@@ -680,19 +680,19 @@ export class WalletsPage {
     });
     console.log(contract);
     console.log(contract[0]);
-    const multisigEthObj = {
+    const multisigEthInfo = {
       contractAddress: contract[0].instantiation,
       walletName: 'Hola',
       n: 1, // this.navParams.data.requiredConfirmations,
       m: 1 // this.navParams.data.multisigAddresses.length
     };
     const pairedWallet = wallet;
-    return this.createAndBindTokenWallet(pairedWallet, multisigEthObj);
+    return this.createAndBindTokenWallet(pairedWallet, multisigEthInfo);
   }
-  public createAndBindTokenWallet(pairedWallet, multisigEthObj) {
+  public createAndBindTokenWallet(pairedWallet, multisigEthInfo) {
     if (!_.isEmpty(pairedWallet)) {
       this.profileProvider
-        .createMultisigEthWallet(pairedWallet, multisigEthObj)
+        .createMultisigEthWallet(pairedWallet, multisigEthInfo)
         .then(() => {
           // store preferences for the paired eth wallet
           console.log('-------------- pairedWallet: ', pairedWallet);

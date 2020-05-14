@@ -1,0 +1,62 @@
+<wide-header-page title="{{ 'Create ETH Multisig Wallet' }}">
+  <ion-buttons right>
+    <button clear wide-header-bar-button (click)="goToConfirm()" [disabled]="n != multisigAddresses.length" ion-button>
+      <span translate>Create</span>
+    </button>
+  </ion-buttons>
+  <div page-content>
+    <button class="linked-wallet" ion-item (click)="showPairedWalletSelector()">
+      <ion-label>
+        <div class="summary-item">
+          <span translate>Linked to</span>
+        </div>
+      </ion-label>
+
+      <ion-note item-end>
+        <ion-row align-items-center class="wallet" *ngIf="pairedWallet">
+          <ion-col>
+            <coin-icon [coin]="pairedWallet.coin" [network]="pairedWallet.network"></coin-icon>
+          </ion-col>
+
+          <ion-col>
+            <span class="note-container ellipsis">{{pairedWallet.name}}</span>
+          </ion-col>
+        </ion-row>
+
+        <ion-row align-items-center class="wallet" *ngIf="!pairedWallet">
+          <div translate>Select a wallet to link to</div>
+          <div class="last-item" item-end>
+            <button ion-button clear color="grey" icon-only>
+              <ion-icon *ngIf="!isOpenSelector" name="ios-arrow-down-outline"></ion-icon>
+              <ion-icon *ngIf="isOpenSelector" name="ios-arrow-up-outline"></ion-icon>
+            </button>
+          </div>
+        </ion-row>
+      </ion-note>
+    </button>
+    <div padding>
+      <p>{{'You are creating a {m}-{n} wallet.' | translate: { n: n, m: m } }}</p>
+      <p>{{'Now paste or scan the addresses of the Copayers that will be part of this multisig wallet.' | translate }}</p>
+    </div>
+    <div class="multisig-input">
+      <ion-item class="search-wrapper" [ngClass]="{'invalid': invalidAddress && search != ''}">
+        <ion-input placeholder="{{'Enter ETH address' }}" [(ngModel)]="search" (ngModelChange)="processInput()" (ionChange)="processInput(search)"></ion-input>
+        <ion-icon *ngIf="invalidAddress && search != ''" item-end class="backspace-icon" name="backspace" (click)="cleanSearch()"></ion-icon>
+        <ion-icon item-end class="scan-icon" (click)="openScanner()">
+          <img src="assets/img/scan-ico.svg">
+        </ion-icon>
+      </ion-item>
+    </div>
+    <button *ngIf="!invalidAddress && search != ''" clear (click)="addAddress()" ion-button>
+      {{'Add Address' | translate}}
+    </button>
+
+    <div>
+      <ion-item-divider class="item-divider-header" *ngFor="let addr of multisigAddresses; let idx = index">
+        <span class="ellipsis">{{idx+1}} - {{addr}}</span>
+        <ion-icon *ngIf="idx != 0" class="close-icon pointer" name="ios-close-outline" item-right (click)="removeAddress(idx)"></ion-icon>
+      </ion-item-divider>
+    </div>
+
+  </div>
+</wide-header-page>

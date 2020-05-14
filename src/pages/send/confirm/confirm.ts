@@ -1006,20 +1006,20 @@ export class ConfirmPage {
   //     '#################################multisigContractInstantiationInfo',
   //     multisigContractInstantiationInfo
   //   );
-  //   const multisigEthObj = {
+  //   const multisigEthInfo = {
   //     contractAddress: multisigContractInstantiationInfo.instantiation,
   //     walletName: 'Hola',
   //     n: this.navParams.data.requiredConfirmations,
   //     m: this.navParams.data.multisigAddresses.length
   //   };
   //   const pairedWallet = this.wallet;
-  //   return this.createAndBindTokenWallet(pairedWallet, multisigEthObj);
+  //   return this.createAndBindTokenWallet(pairedWallet, multisigEthInfo);
   // }
 
-  public createAndBindTokenWallet(pairedWallet, multisigEthObj) {
+  public createAndBindTokenWallet(pairedWallet, multisigEthInfo) {
     if (!_.isEmpty(pairedWallet)) {
       this.profileProvider
-        .createMultisigEthWallet(pairedWallet, multisigEthObj)
+        .createMultisigEthWallet(pairedWallet, multisigEthInfo)
         .then(() => {
           // store preferences for the paired eth wallet
           console.log('-------------- pairedWallet: ', pairedWallet);

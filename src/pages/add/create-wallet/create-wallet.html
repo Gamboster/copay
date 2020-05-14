@@ -1,7 +1,10 @@
 <wide-header-page title="{{ 'Create {coinLabel} Wallet' | translate: {coinLabel: coin.toUpperCase()} }}">
   <ion-buttons right>
-    <button clear wide-header-bar-button (click)="setOptsAndCreate()" [disabled]="!createForm.valid" ion-button>
+    <button clear wide-header-bar-button *ngIf="!isShared || (isShared && coin !== 'eth')" (click)="setOptsAndCreate()" [disabled]="!createForm.valid" ion-button>
       <span translate>Create</span>
+    </button>
+    <button clear wide-header-bar-button *ngIf="isShared && coin === 'eth'" (click)="goToCreateEthMultisig()" [disabled]="!createForm.valid" ion-button>
+      <span translate>Next</span>
     </button>
   </ion-buttons>
   <div page-content>
@@ -47,36 +50,13 @@
           <ion-input type="text" formControlName="myName"></ion-input>
         </ion-item>
 
-        <div class="multisig-input" *ngIf="coin === 'eth'">
-          <ion-item class="search-wrapper" [ngClass]="{'invalid': invalidAddress && createForm.value.search != ''}">
-            <ion-input placeholder="{{'Enter {coinName} address' | translate: {coinName: coin.toUpperCase()} }}" formControlName="search" (ionChange)="processInput(createForm.value.search)"></ion-input>
-            <ion-icon *ngIf="invalidAddress && createForm.value.search != ''" item-end class="backspace-icon" name="backspace" (click)="cleanSearch()"></ion-icon>
-            <ion-icon item-end class="scan-icon" (click)="openScanner()">
-              <img src="assets/img/scan-ico.svg">
-            </ion-icon>
-          </ion-item>
-        </div>
-        <button *ngIf="!invalidAddress && createForm.value.search != ''" clear (click)="addAddress()" ion-button>
-          {{'Add Address' | translate}}
-        </button>
-
-        <div *ngIf="coin === 'eth'">
-          <!-- <div *ngFor="let addr of multisigAddresses; let idx = index">
-            <span>{{idx+1}} - {{addr}}</span>
-          </div> -->
-          <ion-item-divider class="item-divider-header" *ngFor="let addr of multisigAddresses; let idx = index">
-            <span class="ellipsis">{{idx+1}} - {{addr}}</span>
-            <ion-icon *ngIf="idx != 0" class="close-icon pointer" name="ios-close-outline" item-right (click)="removeAddress(idx)"></ion-icon>
-          </ion-item-divider>
-        </div>
-
         <div class="custom-item">
           <div class="label">{{'Required number of signatures' | translate}}</div>
           <div class="buttons-container">
-            <button clear class="remove-button" (click)="this.coin === 'eth' ? setEthMultisigRequiredCopayers('remove') : set('requiredCopayers', this.createForm.value.requiredCopayers - 1)" ion-button>
+            <button clear class="remove-button" (click)="set('requiredCopayers', this.createForm.value.requiredCopayers - 1)" ion-button>
               <ion-icon name="remove"></ion-icon>
             </button>
-            <button clear class="add-button" (click)="this.coin === 'eth' ? setEthMultisigRequiredCopayers('add') : set('requiredCopayers', this.createForm.value.requiredCopayers + 1)" ion-button>
+            <button clear class="add-button" (click)="set('requiredCopayers', this.createForm.value.requiredCopayers + 1)" ion-button>
               {{createForm.value.requiredCopayers}}
             </button>
           </div>
@@ -84,16 +64,11 @@
 
         <div class="custom-item">
           <div class="label">{{'Total number of copayers' | translate}}</div>
-          <div *ngIf="coin !== 'eth'" class="buttons-container">
+          <div class="buttons-container">
             <button clear class="remove-button" (click)="set('totalCopayers', this.createForm.value.totalCopayers - 1)" ion-button>
               <ion-icon name="remove"></ion-icon>
             </button>
             <button clear class="add-button" (click)="set('totalCopayers',this.createForm.value.totalCopayers + 1)" ion-button>
-              {{createForm.value.totalCopayers}}
-            </button>
-          </div>
-          <div *ngIf="coin === 'eth'" class="buttons-container">
-            <button clear class="add-button" ion-button>
               {{createForm.value.totalCopayers}}
             </button>
           </div>
