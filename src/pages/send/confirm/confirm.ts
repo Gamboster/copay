@@ -71,6 +71,7 @@ export class ConfirmPage {
   public showMultiplesOutputs: boolean;
   public fromMultiSend: boolean;
   public fromSelectInputs: boolean;
+  public fromEthMultisig: boolean;
   public recipients;
   public coin: Coin;
   public appName: string;
@@ -94,7 +95,8 @@ export class ConfirmPage {
 
   public mainTitle: string;
   public isSpeedUpTx: boolean;
-  // private fromAddress;
+  private fromAddress;
+  public txpId: string;
 
   // // Card flags for zen desk chat support
   // private isCardPurchase: boolean;
@@ -144,6 +146,9 @@ export class ConfirmPage {
     this.recipients = this.navParams.data.recipients;
     this.fromMultiSend = this.navParams.data.fromMultiSend;
     this.fromSelectInputs = this.navParams.data.fromSelectInputs;
+    this.fromEthMultisig = this.navParams.data.multisigGnosisContractAddress
+      ? true
+      : false;
     this.appName = this.appProvider.info.nameCase;
     this.isSpeedUpTx = this.navParams.data.speedUpTx;
     // this.isCardPurchase =
@@ -157,6 +162,7 @@ export class ConfirmPage {
 
   ionViewWillLeave() {
     this.navCtrl.swipeBackEnabled = true;
+    this.events.unsubscribe('bwsEvent', this.bwsEventHandler);
   }
 
   ngOnDestroy() {
@@ -238,6 +244,7 @@ export class ConfirmPage {
         : networkName,
       coin: this.navParams.data.coin,
       txp: {},
+      multisigContractAddress: this.navParams.data.multisigContractAddress,
       tokenAddress: this.navParams.data.tokenAddress,
       multisigGnosisContractAddress: this.navParams.data
         .multisigGnosisContractAddress,
@@ -958,6 +965,24 @@ export class ConfirmPage {
         }
       }
 
+      if (tx.multisigContractAddress) {
+        txp.multisigContractAddress = tx.multisigContractAddress;
+        for (const output of txp.outputs) {
+          if (!output.data) {
+            output.data = this.bwcProvider
+              .getCore()
+              .Transactions.get({ chain: 'ETHMULTISIG' })
+              .submitEncodeData({
+                recipients: [
+                  { address: output.toAddress, amount: output.amount }
+                ],
+                multisigContractAddress: tx.multisigContractAddress,
+                dataByte: '0x'
+              });
+          }
+        }
+      }
+
       if (tx.multisigGnosisContractAddress) {
         txp.multisigGnosisContractAddress = tx.multisigGnosisContractAddress;
         for (const output of txp.outputs) {
@@ -992,10 +1017,11 @@ export class ConfirmPage {
           }
 
           txp.from = address;
-          // this.setFromAddress(txp.from);
+          this.setFromAddress(txp.from);
           this.walletProvider
             .createTx(wallet, txp)
             .then(ctxp => {
+              console.log('-------------- ctxp: ', ctxp);
               return resolve(ctxp);
             })
             .catch(err => {
@@ -1008,42 +1034,88 @@ export class ConfirmPage {
     });
   }
 
-  // private setFromAddress(address) {
-  //   this.fromAddress = address;
-  // }
-  // private async bwsEventHandler() {
-  //   const opts = {
-  //     sender: this.fromAddress,
-  //     network: this.wallet.network
-  //   };
-  //   console.log('##########################opts', opts);
-  //   const multisigContractInstantiationInfo = await this.walletProvider.getMultisigContractInstantiationInfo(
-  //     this.wallet,
-  //     opts
-  //   );
-  //   console.log(
-  //     '#################################multisigContractInstantiationInfo',
-  //     multisigContractInstantiationInfo
-  //   );
-  //   const multisigEthInfo = {
-  //     contractAddress: multisigContractInstantiationInfo.instantiation,
-  //     walletName: 'Hola',
-  //     n: this.navParams.data.requiredConfirmations,
-  //     m: this.navParams.data.multisigAddresses.length
-  //   };
-  //   const pairedWallet = this.wallet;
-  //   return this.createAndBindTokenWallet(pairedWallet, multisigEthInfo);
-  // }
+  private setFromAddress(address) {
+    this.fromAddress = address;
+  }
+
+  private bwsEventHandler: any = async (n?: number) => {
+    let tryNumber = n ? n : 0;
+    console.log(
+      'Getting multisig contract instantiation info. Try number: ',
+      tryNumber
+    );
+    if (tryNumber == 5) {
+      console.log('Error getting multisig contract instantiation info');
+      return;
+    }
+
+    setTimeout(async () => {
+      let multisigContractInstantiationInfo: any[] = [];
+
+      const opts = {
+        sender: this.fromAddress,
+        network: this.wallet.network,
+        coin: this.wallet.coin
+      };
+      console.log('##########################opts', opts);
+
+      multisigContractInstantiationInfo = await this.walletProvider.getMultisigContractInstantiationInfo(
+        this.wallet,
+        opts
+      );
+      console.log(
+        '#################################multisigContractInstantiationInfo',
+        multisigContractInstantiationInfo
+      );
+
+      if (multisigContractInstantiationInfo.length > 0) {
+        const multisigContract = multisigContractInstantiationInfo.filter(
+          multisigContract => {
+            console.log(
+              '######################multisigContract.transactionHash',
+              multisigContract.transactionHash
+            );
+            return multisigContract.transactionHash === this.txpId;
+          }
+        );
+
+        if (!multisigContract[0]) {
+          console.log('########## TXID NO COINCIDEN- VOLVER A INTENTAR');
+          return this.bwsEventHandler(tryNumber++);
+        }
+
+        const multisigEthInfo = {
+          multisigContractAddress: multisigContract[0].instantiation,
+          walletName: this.navParams.data.walletName,
+          n: this.navParams.data.totalCopayers,
+          m: this.navParams.data.requiredConfirmations
+        };
+        const pairedWallet = this.wallet;
+        this.onGoingProcessProvider.clear();
+        return this.createAndBindTokenWallet(pairedWallet, multisigEthInfo);
+      } else {
+        console.log(
+          '########## NO HAY multisigContractInstantiationInfo- VOLVER A INTENTAR'
+        );
+        return this.bwsEventHandler(tryNumber++);
+      }
+    }, 5000);
+  };
 
   public createAndBindTokenWallet(pairedWallet, multisigEthInfo) {
     if (!_.isEmpty(pairedWallet)) {
       this.profileProvider
         .createMultisigEthWallet(pairedWallet, multisigEthInfo)
-        .then(() => {
+        .then(multisigWallet => {
           // store preferences for the paired eth wallet
           console.log('-------------- pairedWallet: ', pairedWallet);
+          console.log('------------- multisigWallet: ', multisigWallet);
           this.walletProvider.updateRemotePreferences(pairedWallet);
-          this.events.publish('Local/WalletListChange');
+          this.openFinishModal(false, { redir: null }, multisigWallet.id).then(
+            () => {
+              this.events.publish('Local/WalletListChange');
+            }
+          );
         });
     }
   }
@@ -1203,7 +1275,6 @@ export class ConfirmPage {
     return this.walletProvider
       .publishAndSign(wallet, txp)
       .then(txp => {
-        this.onGoingProcessProvider.clear();
         if (
           this.config.confirmedTxsNotifications &&
           this.config.confirmedTxsNotifications.enabled
@@ -1214,11 +1285,19 @@ export class ConfirmPage {
         }
         let redir;
         console.log('#######################################txid', txp);
-        console.log('#######################################txid', txp.id);
+        console.log('#######################################txid', txp.txid);
+        this.txpId = txp.txid;
         if (txp.payProUrl && txp.payProUrl.includes('redir=wc')) {
           redir = 'wc';
         }
-        return this.openFinishModal(false, { redir });
+
+        if (this.fromEthMultisig) {
+          this.onGoingProcessProvider.set('creatingEthMultisigWallet');
+          return this.bwsEventHandler();
+        } else {
+          this.onGoingProcessProvider.clear();
+          return this.openFinishModal(false, { redir });
+        }
       })
       .catch(err => {
         if (this.isCordova) this.slideButton.isConfirmed(false);
@@ -1255,7 +1334,8 @@ export class ConfirmPage {
 
   protected async openFinishModal(
     onlyPublish?: boolean,
-    redirectionParam?: { redir: string }
+    redirectionParam?: { redir: string },
+    walletId?: string
   ) {
     const { redir } = redirectionParam || { redir: '' };
 
@@ -1300,10 +1380,6 @@ export class ConfirmPage {
         this.navCtrl.push(CoinbaseAccountPage, {
           id: this.fromCoinbase.accountId
         });
-      } else if (this.navParams.data.multisigGnosisContractAddress) {
-        // setTimeout(() => {
-        //   this.bwsEventHandler();
-        // }, 20000);
       } else {
         if (redir) {
           setTimeout(() => {
@@ -1319,7 +1395,7 @@ export class ConfirmPage {
           }, 1000);
         } else {
           this.navCtrl.push(WalletDetailsPage, {
-            walletId: this.wallet.credentials.walletId
+            walletId: walletId ? walletId : this.wallet.credentials.walletId
           });
         }
       }

@@ -622,7 +622,7 @@ export class WalletsPage {
     console.log(contract);
     console.log(contract[0]);
     const multisigEthInfo = {
-      contractAddress: contract[0].instantiation,
+      multisigContractAddress: contract[0].instantiation,
       walletName: 'Hola',
       n: 1, // this.navParams.data.requiredConfirmations,
       m: 1 // this.navParams.data.multisigAddresses.length
