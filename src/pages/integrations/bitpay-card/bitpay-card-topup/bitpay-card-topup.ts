@@ -352,6 +352,11 @@ export class BitPayCardTopUpPage {
             txp.tokenAddress = wallet.credentials.token.address;
           }
 
+          if (wallet.credentials.multisigEthInfo) {
+            txp.multisigContractAddress =
+              wallet.credentials.multisigEthInfo.multisigContractAddress;
+          }
+
           if (details.requiredFeeRate) {
             const requiredFeeRate = !this.currencyProvider.isUtxoCoin(
               wallet.coin

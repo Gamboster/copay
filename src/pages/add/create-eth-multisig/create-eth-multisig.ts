@@ -165,9 +165,11 @@ export class CreateEthMultisigPage {
       this.currencyProvider.getPrecision(this.pairedWallet.coin).unitToSatoshi;
     // this.navCtrl.push(ConfirmPage, {
     console.log('toConfirmPage', {
+      walletName: this.navParams.data.walletName,
       walletId: this.pairedWallet.credentials.walletId, // le de aeth madre
       totalAmount,
       amount,
+      description: this.translate.instant('ETH Multisig Wallet creation'),
       multisigAddresses: this.multisigAddresses,
       requiredConfirmations: this.m,
       totalCopayers: this.n,
@@ -177,5 +179,25 @@ export class CreateEthMultisigPage {
         '0x2C992817e0152A65937527B774c7A99a84603045', // address gnosis multisig contract
       toAddress: '0x2C992817e0152A65937527B774c7A99a84603045' // address gnosis multisig contract
     });
+
+    let nextView = {
+      name: 'ConfirmPage',
+      params: {
+        walletName: this.navParams.data.walletName,
+        walletId: this.pairedWallet.credentials.walletId, // le de aeth madre
+        totalAmount,
+        amount,
+        description: this.translate.instant('ETH Multisig Wallet creation'),
+        multisigAddresses: this.multisigAddresses,
+        requiredConfirmations: this.m,
+        totalCopayers: this.n,
+        coin: this.pairedWallet.coin,
+        network: this.navParams.data.testnetEnabled ? 'testnet' : 'livenet',
+        multisigGnosisContractAddress:
+          '0x2C992817e0152A65937527B774c7A99a84603045', // address gnosis multisig contract
+        toAddress: '0x2C992817e0152A65937527B774c7A99a84603045' // address gnosis multisig contract
+      }
+    };
+    this.events.publish('IncomingDataRedir', nextView);
   }
 }

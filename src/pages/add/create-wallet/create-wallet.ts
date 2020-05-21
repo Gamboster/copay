@@ -99,10 +99,8 @@ export class CreateWalletPage implements OnInit {
     private bwcProvider: BwcProvider,
     private modalCtrl: ModalController,
     private persistenceProvider: PersistenceProvider,
-    private errorsProvider: ErrorsProvider
-  ) // private addressProvider: AddressProvider,
-  // private incomingDataProvider: IncomingDataProvider
-  {
+    private errorsProvider: ErrorsProvider // private addressProvider: AddressProvider, // private incomingDataProvider: IncomingDataProvider
+  ) {
     this.okText = this.translate.instant('Ok');
     this.cancelText = this.translate.instant('Cancel');
     this.isShared = this.navParams.get('isShared');
@@ -112,7 +110,7 @@ export class CreateWalletPage implements OnInit {
     this.defaults = this.configProvider.getDefaults();
     this.multisigAddresses = [];
     this.tc = this.isShared ? this.defaults.wallet.totalCopayers : 1;
-    this.copayers = _.range(2, this.defaults.limits.totalCopayers + 1);
+    this.copayers = _.range(1, this.defaults.limits.totalCopayers + 1);
     this.derivationPathByDefault = this.isShared
       ? this.coin === 'bch'
         ? this.derivationPathHelperProvider.defaultMultisigBCH
@@ -122,7 +120,9 @@ export class CreateWalletPage implements OnInit {
       .getCore()
       .Deriver.pathFor(this.coin, 'testnet');
     this.showAdvOpts = false;
-    const walletName = this.currencyProvider.getCoinName(this.coin);
+    const walletName =
+      this.currencyProvider.getCoinName(this.coin) +
+      (this.isShared ? ' Multisig' : '');
     this.createForm = this.fb.group({
       walletName: [walletName, Validators.required],
       myName: [null],
@@ -571,7 +571,9 @@ export class CreateWalletPage implements OnInit {
     const eligibleWallets = this.keyId
       ? this.profileProvider.getWalletsFromGroup({
           keyId: this.keyId,
-          coin: 'eth'
+          coin: 'eth',
+          m: 1,
+          n: 1
         })
       : [];
 
@@ -602,7 +604,8 @@ export class CreateWalletPage implements OnInit {
       pairedWallet: this.pairedWallet,
       m: this.createForm.value.requiredCopayers,
       n: this.createForm.value.totalCopayers,
-      testnetEnabled: this.createForm.value.testnetEnabled
+      testnetEnabled: this.createForm.value.testnetEnabled,
+      walletName: this.createForm.value.walletName
     });
   }
 }

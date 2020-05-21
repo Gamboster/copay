@@ -601,6 +601,9 @@ export class AmountPage {
       if (this.wallet.credentials.token) {
         data.tokenAddress = this.wallet.credentials.token.address;
       }
+      if (this.wallet.credentials.multisigEthInfo) {
+        data.multisigContractAddress = this.wallet.credentials.multisigEthInfo.multisigContractAddress;
+      }
     }
 
     if (this.destinationTag) {

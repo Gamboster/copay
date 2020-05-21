@@ -81,6 +81,7 @@ export interface TransactionProposal {
   destinationTag?: string;
   invoiceID?: string;
   multisigGnosisContractAddress?: string;
+  multisigContractAddress?: string;
 }
 
 @Injectable()
@@ -364,6 +365,10 @@ export class WalletProvider {
 
           tries = tries || 0;
           const { token, multisigEthInfo } = wallet.credentials;
+          console.log(
+            '$$$$$$$$$$$$$$$$$$$$ multisigEthInfo: ',
+            multisigEthInfo
+          );
           wallet.getStatus(
             {
               tokenAddress: token ? token.address : '',
@@ -478,7 +483,11 @@ export class WalletProvider {
   public getAddress(wallet, forceNew: boolean): Promise<string> {
     return new Promise((resolve, reject) => {
       let walletId = wallet.id;
-      const { token } = wallet.credentials;
+      const { token, multisigEthInfo } = wallet.credentials;
+      console.log('================ wallet: ', wallet);
+      if (multisigEthInfo && multisigEthInfo.multisigContractAddress) {
+        return resolve(multisigEthInfo.multisigContractAddress);
+      }
 
       if (token) {
         walletId = wallet.id.replace(`-${token.address}`, '');
@@ -1035,6 +1044,16 @@ export class WalletProvider {
     return new Promise((resolve, reject) => {
       opts = opts || {};
       wallet.getMultisigContractInstantiationInfo(opts, (err, res) => {
+        if (err) return reject(err);
+        return resolve(res);
+      });
+    });
+  }
+
+  public getMultisigContractConfirmationInfo(wallet, opts): Promise<any> {
+    return new Promise((resolve, reject) => {
+      opts = opts || {};
+      wallet.getMultisigContractConfirmationInfo(opts, (err, res) => {
         if (err) return reject(err);
         return resolve(res);
       });

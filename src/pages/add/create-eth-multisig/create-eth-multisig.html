@@ -5,7 +5,7 @@
     </button>
   </ion-buttons>
   <div page-content>
-    <button class="linked-wallet" ion-item (click)="showPairedWalletSelector()">
+    <ion-item>
       <ion-label>
         <div class="summary-item">
           <span translate>Linked to</span>
@@ -22,18 +22,8 @@
             <span class="note-container ellipsis">{{pairedWallet.name}}</span>
           </ion-col>
         </ion-row>
-
-        <ion-row align-items-center class="wallet" *ngIf="!pairedWallet">
-          <div translate>Select a wallet to link to</div>
-          <div class="last-item" item-end>
-            <button ion-button clear color="grey" icon-only>
-              <ion-icon *ngIf="!isOpenSelector" name="ios-arrow-down-outline"></ion-icon>
-              <ion-icon *ngIf="isOpenSelector" name="ios-arrow-up-outline"></ion-icon>
-            </button>
-          </div>
-        </ion-row>
       </ion-note>
-    </button>
+    </ion-item>
     <div padding>
       <p>{{'You are creating a {m}-{n} wallet.' | translate: { n: n, m: m } }}</p>
       <p>{{'Now paste or scan the addresses of the Copayers that will be part of this multisig wallet.' | translate }}</p>
