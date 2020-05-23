@@ -262,6 +262,7 @@ export class TabsPage {
     const promises = [];
 
     _.each(this.profileProvider.wallet, wallet => {
+      if (wallet.hidden) return; // TODO REMOVE
       promises.push(pr(wallet));
     });
 

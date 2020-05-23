@@ -1,4 +1,4 @@
-<wide-header-page title="{{'Shared Wallet' | translate}}">
+<wide-header-page title="{{'Join Shared Wallet' | translate}}">
   <ion-buttons right>
     <button clear wide-header-bar-button (click)="setOptsAndJoin()" [disabled]="!joinForm.valid" ion-button>
       <span translate>Join</span>
@@ -11,13 +11,21 @@
         <ion-input type="text" formControlName="myName"></ion-input>
       </ion-item>
 
-      <ion-item>
+      <ion-item *ngIf="coin != 'eth'">
         <ion-label floating>{{'Wallet invitation' | translate}}</ion-label>
         <ion-input type="text" formControlName="invitationCode" (ionChange)="processInvitation(joinForm.value.invitationCode)"></ion-input>
 
         <ion-icon *ngIf="joinForm.controls['invitationCode'].status == 'VALID'" name="ios-checkmark-circle" class="check success" item-right></ion-icon>
 
         <ion-icon class="scanner-icon" name="qr-scanner" item-right (click)="openScanner()"></ion-icon>
+      </ion-item>
+
+      <ion-item *ngIf="coin === 'eth'">
+        <ion-label floating>{{'Contract Address' | translate}}</ion-label>
+        <ion-input type="text" formControlName="contractAddress"></ion-input>
+
+        <ion-icon class="scanner-icon" name="qr-scanner" item-right (click)="openScanner()"></ion-icon>
+
       </ion-item>
 
       <button ion-button class="button-standard button-secondary" (click)="showAdvOpts = !showAdvOpts">

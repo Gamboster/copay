@@ -1050,6 +1050,16 @@ export class WalletProvider {
     });
   }
 
+  public getMultisigContractInfo(wallet, opts): Promise<any> {
+    return new Promise((resolve, reject) => {
+      opts = opts || {};
+      wallet.getMultisigContractInfo(opts, (err, res) => {
+        if (err) return reject(err);
+        return resolve(res);
+      });
+    });
+  }
+
   public getMultisigContractConfirmationInfo(wallet, opts): Promise<any> {
     return new Promise((resolve, reject) => {
       opts = opts || {};

@@ -269,7 +269,7 @@ export class ScanPage {
     } else if (this.fromImport) {
       this.events.publish('Local/BackupScan', { value: contents });
     } else if (this.fromJoin) {
-      this.events.publish('Local/InvitationScan', { value: contents });
+      this.events.publish('Local/JoinScan', { value: contents });
     } else if (this.fromSend) {
       this.events.publish('Local/AddressScan', { value: contents });
     } else if (this.fromMultiSend) {
