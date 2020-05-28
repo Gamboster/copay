@@ -84,7 +84,10 @@ export class CreateEthMultisigPage {
       if (parsedData && _.indexOf(validDataTypeMap, parsedData.type) != -1) {
         const isValid = this.checkCoinAndNetwork(this.search);
         if (isValid) {
-          this.invalidAddress = false;
+          setTimeout(() => {
+            this.invalidAddress = false;
+            this.addAddress(this.search);
+          }, 100);
         } else {
           this.invalidAddress = true;
           const msg = this.translate.instant(
@@ -122,7 +125,8 @@ export class CreateEthMultisigPage {
     });
   }
 
-  public addAddress(address?: string) {
+  public addAddress(address: string) {
+    if (!address) return;
     if (this.n == this.multisigAddresses.length) {
       const msg = this.translate.instant(
         'The maximum number of Copayers has already been reached'
@@ -131,22 +135,14 @@ export class CreateEthMultisigPage {
       this.cleanSearch();
       return;
     }
-    if (
-      (address && _.includes(this.multisigAddresses, address)) ||
-      _.includes(this.multisigAddresses, this.search)
-    ) {
+    if (_.includes(this.multisigAddresses, address)) {
       const msg = this.translate.instant('Address already added');
       this.showErrorMessage(msg);
       this.cleanSearch();
       return;
     }
-    if (address) {
-      this.multisigAddresses.push(address);
-    } else {
-      this.multisigAddresses.push(this.search);
-      this.cleanSearch();
-    }
-    // this.setEthMultisigTotalCopayers(this.multisigAddresses.length);
+    this.multisigAddresses.push(address);
+    this.cleanSearch();
   }
 
   public removeAddress(index: number): void {

@@ -977,7 +977,7 @@ export class ConfirmPage {
                   { address: output.toAddress, amount: output.amount }
                 ],
                 multisigContractAddress: tx.multisigContractAddress,
-                dataByte: '0x'
+                data: '0x'
               });
           }
         }
