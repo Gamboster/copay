@@ -196,6 +196,7 @@ export class WalletDetailsPage {
     this.walletProvider
       .fetchTxHistory(this.wallet, progressFn, opts)
       .then(txHistory => {
+        console.log('--------------------- txHistory: ', txHistory);
         this.wallet.completeHistory = txHistory;
         this.events.publish('Local/WalletHistoryUpdate', {
           walletId: opts.walletId,
@@ -684,5 +685,47 @@ export class WalletDetailsPage {
     this.navCtrl.push(BackupKeyPage, {
       keyId: this.wallet.credentials.keyId
     });
+  }
+
+  public goToConfirm(opts?): void {
+    console.log('---------- opts: ', opts);
+    let totalAmount =
+      0 * this.currencyProvider.getPrecision(this.wallet.coin).unitToSatoshi;
+    let amount =
+      0 * this.currencyProvider.getPrecision(this.wallet.coin).unitToSatoshi;
+    // this.navCtrl.push(ConfirmPage, {
+    console.log('toConfirmPage', {
+      walletId: this.wallet.credentials.walletId, // le de aeth madre
+      totalAmount,
+      amount,
+      description: this.translate.instant('ETH Multisig TXP confirmation'),
+      coin: this.wallet.coin,
+      network: this.wallet.network,
+      multisigContractAddress: this.wallet.credentials.multisigEthInfo
+        .multisigContractAddress, // address eth multisig contract
+      toAddress: this.wallet.credentials.multisigEthInfo
+        .multisigContractAddress, // address eth multisig contract
+      isEthMultisigConfirm: true,
+      transactionId: opts.transactionId
+    });
+
+    let nextView = {
+      name: 'ConfirmPage',
+      params: {
+        walletId: this.wallet.credentials.walletId, // le de aeth madre
+        totalAmount,
+        amount,
+        description: this.translate.instant('ETH Multisig TXP confirmation'),
+        coin: this.wallet.coin,
+        network: this.wallet.network,
+        multisigContractAddress: this.wallet.credentials.multisigEthInfo
+          .multisigContractAddress, // address eth multisig contract
+        toAddress: this.wallet.credentials.multisigEthInfo
+          .multisigContractAddress, // address eth multisig contract
+        isEthMultisigConfirm: true,
+        transactionId: opts.transactionId
+      }
+    };
+    this.events.publish('IncomingDataRedir', nextView);
   }
 }

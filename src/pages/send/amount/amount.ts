@@ -636,6 +636,10 @@ export class AmountPage {
         v2: true
       };
     }
+    console.log(
+      '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ data en amount: ',
+      data
+    );
     this.useAsModal
       ? this.closeModal(data)
       : this.navCtrl.push(this.nextView, data);

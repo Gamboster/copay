@@ -133,9 +133,9 @@ export class TabsPage {
       .then(lastDayRatesArray => {
         this.walletProvider
           .getTotalAmount(
-          this.profileProvider.wallet,
-          totalBalanceAlternativeIsoCode,
-          lastDayRatesArray
+            this.profileProvider.wallet,
+            totalBalanceAlternativeIsoCode,
+            lastDayRatesArray
           )
           .then(data => {
             this.logger.debug('Total Balance Updated');

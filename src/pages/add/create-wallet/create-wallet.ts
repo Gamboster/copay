@@ -569,11 +569,11 @@ export class CreateWalletPage implements OnInit {
   public showPairedWalletSelector() {
     const eligibleWallets = this.keyId
       ? this.profileProvider.getWalletsFromGroup({
-        keyId: this.keyId,
-        coin: 'eth',
-        m: 1,
-        n: 1
-      })
+          keyId: this.keyId,
+          coin: 'eth',
+          m: 1,
+          n: 1
+        })
       : [];
 
     const walletSelector = this.actionSheetProvider.createInfoSheet(
