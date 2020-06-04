@@ -16,6 +16,7 @@ import { Subscription } from 'rxjs';
 // providers
 import { AddressBookProvider } from '../../providers/address-book/address-book';
 import { BwcErrorProvider } from '../../providers/bwc-error/bwc-error';
+import { ConfigProvider } from '../../providers/config/config';
 import { CurrencyProvider } from '../../providers/currency/currency';
 import { ErrorsProvider } from '../../providers/errors/errors';
 import { ExternalLinkProvider } from '../../providers/external-link/external-link';
@@ -79,6 +80,7 @@ export class WalletDetailsPage {
   public associatedWallet: string;
   public backgroundColor: string;
   private isCordova: boolean;
+  public useLegacyQrCode: boolean;
 
   public supportedCards: Promise<CardConfigMap>;
   constructor(
@@ -103,13 +105,15 @@ export class WalletDetailsPage {
     private socialSharing: SocialSharing,
     private bwcErrorProvider: BwcErrorProvider,
     private errorsProvider: ErrorsProvider,
-    private themeProvider: ThemeProvider
+    private themeProvider: ThemeProvider,
+    private configProvider: ConfigProvider
   ) {
     this.zone = new NgZone({ enableLongStackTrace: false });
     this.isCordova = this.platformProvider.isCordova;
 
     this.wallet = this.profileProvider.getWallet(this.navParams.data.walletId);
     this.supportedCards = this.giftCardProvider.getSupportedCardMap();
+    this.useLegacyQrCode = this.configProvider.get().legacyQrCode.show;
 
     // Getting info from cache
     if (this.navParams.data.clearCache) {

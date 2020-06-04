@@ -44,6 +44,7 @@ export class JoinWalletPage {
   public joinForm: FormGroup;
   public keyId: string;
   public coin: Coin;
+  public isOpenSelector: boolean;
 
   private derivationPathByDefault: string;
   private derivationPathForTestnet: string;
@@ -130,6 +131,7 @@ export class JoinWalletPage {
   }
 
   public showPairedWalletSelector() {
+    this.isOpenSelector = true;
     const eligibleWallets = this.keyId
       ? this.profileProvider.getWalletsFromGroup({
           keyId: this.keyId,
@@ -148,6 +150,7 @@ export class JoinWalletPage {
     );
     walletSelector.present();
     walletSelector.onDidDismiss(pairedWallet => {
+      this.isOpenSelector = false;
       if (pairedWallet) {
         console.log('------ pairedWallet: ', pairedWallet);
         this.pairedWallet = pairedWallet;

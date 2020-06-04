@@ -78,6 +78,7 @@ export class CreateWalletPage implements OnInit {
   public multisigAddresses: string[];
   public invalidAddress: boolean;
   public pairedWallet: any;
+  public isOpenSelector: boolean;
 
   constructor(
     private actionSheetProvider: ActionSheetProvider,
@@ -567,6 +568,7 @@ export class CreateWalletPage implements OnInit {
   // }
 
   public showPairedWalletSelector() {
+    this.isOpenSelector = true;
     const eligibleWallets = this.keyId
       ? this.profileProvider.getWalletsFromGroup({
           keyId: this.keyId,
@@ -585,6 +587,7 @@ export class CreateWalletPage implements OnInit {
     );
     walletSelector.present();
     walletSelector.onDidDismiss(pairedWallet => {
+      this.isOpenSelector = false;
       if (pairedWallet) {
         console.log('------ pairedWallet: ', pairedWallet);
         this.pairedWallet = pairedWallet;
