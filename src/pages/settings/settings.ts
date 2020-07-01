@@ -29,11 +29,11 @@ import { TouchIdProvider } from '../../providers/touchid/touchid';
 // pages
 import { animate, style, transition, trigger } from '@angular/animations';
 import { AddPage } from '../add/add';
+import { CryptoSettingsPage } from '../buy-crypto/crypto-settings/crypto-settings';
 import { BitPaySettingsPage } from '../integrations/bitpay-card/bitpay-settings/bitpay-settings';
 import { CoinbaseSettingsPage } from '../integrations/coinbase/coinbase-settings/coinbase-settings';
 import { GiftCardsSettingsPage } from '../integrations/gift-cards/gift-cards-settings/gift-cards-settings';
 import { ShapeshiftPage } from '../integrations/shapeshift/shapeshift';
-import { SimplexPage } from '../integrations/simplex/simplex';
 import { PinModalPage } from '../pin/pin-modal/pin-modal';
 import { AboutPage } from './about/about';
 import { AddressbookPage } from './addressbook/addressbook';
@@ -295,8 +295,8 @@ export class SettingsPage {
       case 'shapeshift':
         this.navCtrl.push(ShapeshiftPage);
         break;
-      case 'simplex':
-        this.navCtrl.push(SimplexPage);
+      case 'buycrypto':
+        this.navCtrl.push(CryptoSettingsPage);
         break;
       case 'giftcards':
         this.navCtrl.push(GiftCardsSettingsPage);

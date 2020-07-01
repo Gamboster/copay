@@ -6,9 +6,7 @@ import * as _ from 'lodash';
 import { SimplexDetailsPage } from './simplex-details/simplex-details';
 
 // Proviers
-import { ConfigProvider } from '../../../providers/config/config';
 import { ExternalLinkProvider } from '../../../providers/external-link/external-link';
-import { HomeIntegrationsProvider } from '../../../providers/home-integrations/home-integrations';
 import { Logger } from '../../../providers/logger/logger';
 import { SimplexProvider } from '../../../providers/simplex/simplex';
 
@@ -19,7 +17,6 @@ import { SimplexProvider } from '../../../providers/simplex/simplex';
 export class SimplexPage {
   public loading: boolean;
   public paymentRequests: any[];
-  private serviceName: string = 'simplex';
   public showInHome;
   public service;
 
@@ -28,15 +25,8 @@ export class SimplexPage {
     private externalLinkProvider: ExternalLinkProvider,
     private modalCtrl: ModalController,
     private navParams: NavParams,
-    private simplexProvider: SimplexProvider,
-    private homeIntegrationsProvider: HomeIntegrationsProvider,
-    private configProvider: ConfigProvider
-  ) {
-    this.service = _.filter(this.homeIntegrationsProvider.get(), {
-      name: this.serviceName
-    });
-    this.showInHome = !!this.service[0].show;
-  }
+    private simplexProvider: SimplexProvider
+  ) {}
 
   ionViewDidLoad() {
     this.paymentRequests = [];
@@ -91,16 +81,5 @@ export class SimplexPage {
 
   public openExternalLink(url: string) {
     this.externalLinkProvider.open(url);
-  }
-
-  public showInHomeSwitch(): void {
-    let opts = {
-      showIntegration: { [this.serviceName]: this.showInHome }
-    };
-    this.homeIntegrationsProvider.updateConfig(
-      this.serviceName,
-      this.showInHome
-    );
-    this.configProvider.set(opts);
   }
 }
