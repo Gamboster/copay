@@ -4,6 +4,7 @@ import { NavController, NavParams, ViewController } from 'ionic-angular';
 import * as _ from 'lodash';
 
 // Providers
+import { BuyCryptoProvider } from '../../../providers/buy-crypto/buy-crypto';
 import { Logger } from '../../../providers/logger/logger';
 import { PlatformProvider } from '../../../providers/platform/platform';
 
@@ -27,6 +28,8 @@ export class CryptoPaymentMethodPage {
   public paymentRequest;
   public useAsModal: boolean;
   public isIOS: boolean;
+  private coin: string;
+  private currency: string;
 
   constructor(
     private logger: Logger,
@@ -34,22 +37,25 @@ export class CryptoPaymentMethodPage {
     private translate: TranslateService,
     private navCtrl: NavController,
     private viewCtrl: ViewController,
-    private platformProvider: PlatformProvider
+    private platformProvider: PlatformProvider,
+    private buyCryptoProvider: BuyCryptoProvider
   ) {
+    this.coin = this.navParams.data.coin;
+    this.currency = this.navParams.data.currency;
     this.methods = {
       applePay: {
         label: this.translate.instant('Apple Pay'),
         method: 'applePay',
         imgSrc: 'assets/img/buy-crypto/apple-pay.svg',
         simplexSupport: false,
-        wyreSupport: true,
+        wyreSupport: this.isSupported('wyre'),
         enabled: this.platformProvider.isIOS
       },
       creditCard: {
         label: this.translate.instant('Credit Card'),
         method: 'creditCard',
         imgSrc: 'assets/img/buy-crypto/debit-card.svg',
-        simplexSupport: true,
+        simplexSupport: this.isSupported('simplex'),
         wyreSupport: false,
         enabled: true
       },
@@ -57,8 +63,8 @@ export class CryptoPaymentMethodPage {
         label: this.translate.instant('Debit Card'),
         method: 'debitCard',
         imgSrc: 'assets/img/buy-crypto/debit-card.svg',
-        simplexSupport: true,
-        wyreSupport: true,
+        simplexSupport: this.isSupported('simplex'),
+        wyreSupport: this.isSupported('wyre'),
         enabled: true
       }
     };
@@ -77,8 +83,8 @@ export class CryptoPaymentMethodPage {
 
   public goToOrderSummary(): void {
     const params = {
-      coin: this.navParams.data.coin,
-      currency: this.navParams.data.currency,
+      coin: this.coin,
+      currency: this.currency,
       network: this.navParams.data.network,
       walletId: this.navParams.data.walletId,
       paymentMethod: this.methods[this.methodSelected],
@@ -99,5 +105,13 @@ export class CryptoPaymentMethodPage {
     )
       return;
     this.viewCtrl.dismiss({ paymentMethod: this.methods[this.methodSelected] });
+  }
+
+  private isSupported(exchange: string): boolean {
+    return this.buyCryptoProvider.isExchangeSupported(
+      exchange,
+      this.coin,
+      this.currency
+    );
   }
 }

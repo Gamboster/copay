@@ -1,10 +1,13 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import * as _ from 'lodash';
 
 // providers
 import { ConfigProvider } from '../config/config';
 import { HomeIntegrationsProvider } from '../home-integrations/home-integrations';
 import { Logger } from '../logger/logger';
+import { SimplexProvider } from '../simplex/simplex';
+import { WyreProvider } from '../wyre/wyre';
 
 @Injectable()
 export class BuyCryptoProvider {
@@ -12,7 +15,9 @@ export class BuyCryptoProvider {
     private configProvider: ConfigProvider,
     private homeIntegrationsProvider: HomeIntegrationsProvider,
     private logger: Logger,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private simplexProvider: SimplexProvider,
+    private wyreProvider: WyreProvider
   ) {
     this.logger.debug('BuyCrypto Provider initialized');
   }
@@ -31,5 +36,30 @@ export class BuyCryptoProvider {
       show: !!this.configProvider.get().showIntegration['buycrypto'],
       type: 'exchange'
     });
+  }
+
+  public isExchangeSupported(
+    exchange: string,
+    coin: string,
+    currency: string
+  ): boolean {
+    switch (exchange) {
+      case 'simplex':
+        return (
+          _.includes(
+            this.simplexProvider.supportedFiatAltCurrencies,
+            currency.toUpperCase()
+          ) && _.includes(this.simplexProvider.supportedCoins, coin)
+        );
+      case 'wyre':
+        return (
+          _.includes(
+            this.wyreProvider.supportedFiatAltCurrencies,
+            currency.toUpperCase()
+          ) && _.includes(this.wyreProvider.supportedCoins, coin.toUpperCase())
+        );
+      default:
+        return false;
+    }
   }
 }

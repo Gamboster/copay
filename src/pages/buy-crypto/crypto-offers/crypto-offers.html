@@ -25,15 +25,18 @@
         </ion-row>
       </ion-item>
 
-      <action-card-v4 (click)="goToSimplexBuyPage()" tappable>
-        <div action-card-body *ngIf="!sFiatMoney" class="loader">
+      <action-card-v4 (click)="goToSimplexBuyPage()" tappable *ngIf="paymentMethod?.simplexSupport">
+        <div action-card-body *ngIf="!sFiatMoney && !sErrorMsg" class="loader">
           <ion-spinner></ion-spinner>
         </div>
-        <div action-card-body translate *ngIf="sFiatMoney">
-
-          <div class="main-label">{{sAmountReceiving}} {{coin | uppercase}}</div>
-
-          <div class="secondary-label">1 {{coin | uppercase}} = <span *ngIf="fiatCurrency?.toUpperCase() === 'USD'">$</span>{{sFiatMoney?.base_amount}} <span *ngIf="fiatCurrency?.toUpperCase() !== 'USD'">{{fiatCurrency}}</span></div>
+        <div action-card-body translate *ngIf="sFiatMoney || sErrorMsg">
+          <div *ngIf="sErrorMsg">
+            <div class="main-label">{{sErrorMsg}}</div>
+          </div>
+          <div *ngIf="sFiatMoney">
+            <div class="main-label">{{sAmountReceiving}} {{coin | uppercase}}</div>
+            <div class="secondary-label">1 {{coin | uppercase}} = <span *ngIf="fiatCurrency?.toUpperCase() === 'USD'">$</span>{{sFiatMoney | number:'1.2-2'}} <span *ngIf="fiatCurrency?.toUpperCase() !== 'USD'">{{fiatCurrency}}</span> *</div>
+          </div>
           <div class="provider">
             <span class="secondary-label">Provided by</span>
             <img src="assets/img/simplex/logo-simplex-color.svg">
@@ -44,7 +47,7 @@
         </div>
       </action-card-v4>
 
-      <action-card-v4 (click)="goToWyreBuyPage()" tappable>
+      <action-card-v4 (click)="goToWyreBuyPage()" tappable *ngIf="paymentMethod?.wyreSupport">
         <div action-card-body *ngIf="!wFiatMoney" class="loader">
           <ion-spinner></ion-spinner>
         </div>
@@ -65,6 +68,7 @@
 
       <!-- TODO -->
       <p class="card-terms">
+        * fees included <br>
         Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
       </p>
     </ion-list>
