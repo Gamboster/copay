@@ -214,7 +214,7 @@ export class HomePage {
 
     integrations.forEach(x => {
       switch (x.name) {
-        case 'simplex':
+        case 'buycrypto':
           this.showBuyCryptoOption = true;
           break;
         case 'giftcards':

@@ -161,7 +161,7 @@ export class CryptoOffersPage {
         if (data) {
           this.sFiatMoney = data.fiat_money;
           this.sAmountReceiving = Number(
-            this.amount / this.sFiatMoney.total_amount
+            this.amount / this.sFiatMoney.base_amount
           ).toFixed(this.currencyProvider.getPrecision(this.coin).unitDecimals);
           this.logger.debug('Simplex getting quote: SUCCESS');
         }

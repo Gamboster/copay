@@ -33,7 +33,7 @@
 
           <div class="main-label">{{sAmountReceiving}} {{coin | uppercase}}</div>
 
-          <div class="secondary-label">1 {{coin | uppercase}} = <span *ngIf="fiatCurrency?.toUpperCase() === 'USD'">$</span>{{sFiatMoney?.total_amount}} <span *ngIf="fiatCurrency?.toUpperCase() !== 'USD'">{{fiatCurrency}}</span></div>
+          <div class="secondary-label">1 {{coin | uppercase}} = <span *ngIf="fiatCurrency?.toUpperCase() === 'USD'">$</span>{{sFiatMoney?.base_amount}} <span *ngIf="fiatCurrency?.toUpperCase() !== 'USD'">{{fiatCurrency}}</span></div>
           <div class="provider">
             <span class="secondary-label">Provided by</span>
             <img src="assets/img/simplex/logo-simplex-color.svg">
