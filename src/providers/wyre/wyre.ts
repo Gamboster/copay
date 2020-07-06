@@ -15,6 +15,7 @@ export class WyreProvider {
   private env: string;
   public uri: string;
   public supportedFiatAltCurrencies;
+  public supportedCoins;
 
   constructor(
     private http: HttpClient,
@@ -24,7 +25,17 @@ export class WyreProvider {
     this.env = env.name == 'development' ? 'sandbox' : 'production';
     this.logger.debug('WyreProvider initialized - env: ' + this.env);
     this.uri = env.name == 'development' ? URI_DEV : URI_PROD;
-    this.supportedFiatAltCurrencies = ['EUR', 'USD'];
+    this.supportedFiatAltCurrencies = [
+      'EUR',
+      'USD',
+      'BRL',
+      'MXN',
+      'GBP',
+      'AUD',
+      'CNY',
+      'HKD'
+    ];
+    this.supportedCoins = ['ETH', 'BTC'];
   }
 
   public getRates() {
@@ -59,7 +70,6 @@ export class WyreProvider {
     };
     return wallet.wyreUrlParams(data);
   }
-
   public getTransfer(transferId: string) {
     const url = this.uri + '/v2/transfer/' + transferId + '/track';
     const headers = {

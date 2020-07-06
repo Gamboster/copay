@@ -33,6 +33,8 @@ export class CryptoOffersPage {
   // Simplex
   public sFiatMoney;
   public sAmountReceiving;
+  public sAmountLimits;
+  public sErrorMsg: string;
 
   // Wyre
   public wCryptoRate;
@@ -147,28 +149,47 @@ export class CryptoOffersPage {
   private getSimplexQuote(): void {
     this.logger.debug('Simplex getting quote');
 
-    const data = {
-      digital_currency: this.wallet.coin.toUpperCase(),
-      fiat_currency: this.fiatCurrency,
-      requested_currency: this.wallet.coin.toUpperCase(),
-      requested_amount: 1,
-      end_user_id: this.walletId
-    };
+    this.sAmountLimits = this.simplexProvider.getFiatCurrencyLimits(
+      this.fiatCurrency,
+      this.coin
+    );
+    console.log('---------------------this.samount', this.sAmountLimits);
 
-    this.simplexProvider
-      .getQuote(this.wallet, data)
-      .then(data => {
-        if (data) {
-          this.sFiatMoney = data.fiat_money;
-          this.sAmountReceiving = Number(
-            this.amount / this.sFiatMoney.base_amount
-          ).toFixed(this.currencyProvider.getPrecision(this.coin).unitDecimals);
-          this.logger.debug('Simplex getting quote: SUCCESS');
-        }
-      })
-      .catch(err => {
-        this.logger.error('Simplex getting quote FAILED: ' + err);
-      });
+    if (
+      this.amount < this.sAmountLimits.min ||
+      this.amount > this.sAmountLimits.max
+    ) {
+      this.sErrorMsg = `The ${this.fiatCurrency} amount must be between ${
+        this.sAmountLimits.min
+      } and ${this.sAmountLimits.max}`;
+      return;
+    } else {
+      const data = {
+        digital_currency: this.wallet.coin.toUpperCase(),
+        fiat_currency: this.fiatCurrency,
+        requested_currency: this.fiatCurrency,
+        requested_amount: this.amount,
+        end_user_id: this.walletId
+      };
+
+      this.simplexProvider
+        .getQuote(this.wallet, data)
+        .then(data => {
+          if (data) {
+            const baseAmount = data.fiat_money.base_amount;
+            this.sAmountReceiving = data.digital_money.amount;
+            this.sFiatMoney = Number(
+              baseAmount / this.sAmountReceiving
+            ).toFixed(
+              this.currencyProvider.getPrecision(this.coin).unitDecimals
+            );
+            this.logger.debug('Simplex getting quote: SUCCESS');
+          }
+        })
+        .catch(err => {
+          this.logger.error('Simplex getting quote FAILED: ' + err);
+        });
+    }
   }
 
   private getWyreQuote(): void {
