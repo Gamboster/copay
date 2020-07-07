@@ -47,7 +47,7 @@
         </div>
       </action-card-v4>
 
-      <action-card-v4 (click)="goToWyreBuyPage()" tappable *ngIf="paymentMethod?.wyreSupport">
+      <action-card-v4 (click)="goToWyreBuyPage2()" tappable *ngIf="paymentMethod?.wyreSupport">
         <div action-card-body *ngIf="!wFiatMoney" class="loader">
           <ion-spinner></ion-spinner>
         </div>

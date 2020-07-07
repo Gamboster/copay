@@ -70,7 +70,7 @@ export class CryptoOffersPage {
     this.wallet = this.profileProvider.getWallet(this.walletId);
     this.setFiatCurrency();
     this.getSimplexQuote();
-    this.getWyreQuote();
+    this.getWyreQuote2();
   }
 
   public goToSimplexBuyPage() {
@@ -84,7 +84,7 @@ export class CryptoOffersPage {
     this.navCtrl.push(SimplexBuyPage, params);
   }
 
-  public goToWyreBuyPage() {
+  /* public goToWyreBuyPage() {
     this.wyreProvider
       .getWyreUrlParams(this.wallet)
       .then(data => {
@@ -125,6 +125,72 @@ export class CryptoOffersPage {
               '&accountId=' +
               accountId;
             console.log('============= wyre URL: ', url);
+            this.openExternalLink(url);
+          })
+          .catch(err => {
+            this.showError(err);
+          });
+      })
+      .catch(err => {
+        this.showError(err);
+      });
+  } */
+
+  public goToWyreBuyPage2() {
+    this.walletProvider
+      .getAddress(this.wallet, false)
+      .then(address => {
+        //     const widgetUrl = data.widgetUrl;
+        // const accountId = data.accountId;
+        // const coin = this.coin.toUpperCase();
+        // const amount = this.amount;
+
+        let paymentMethod: string;
+        switch (this.paymentMethod.method) {
+          case 'applePay':
+            paymentMethod = 'apple-pay';
+            break;
+          default:
+            paymentMethod = 'debit-card';
+            break;
+        }
+        console.log('---- paymentMethod: ', paymentMethod);
+
+        const redirectUrl = this.appProvider.info.name + '://wyre';
+        const failureRedirectUrl = this.appProvider.info.name + '://wyreError';
+        const data = {
+          amount: this.amount.toString(),
+          dest: 'bitcoin:' + address,
+          destCurrency: this.coin.toUpperCase(),
+          sourceCurrency: this.currency.toUpperCase()
+        };
+
+        this.wyreProvider
+          .walletOrderReservation(this.wallet, data)
+          .then(data => {
+            if (data && data.exceptionId) {
+              this.logger.error(JSON.stringify(data));
+              this.showError(data.message);
+              return;
+            }
+
+            if (data && data.error && !_.isEmpty(data.error)) {
+              this.showError(data.error);
+              return;
+            }
+
+            console.log('-------- goToWyreBuyPage data success: ', data);
+            console.log('============= wyre URL: ', data.url);
+            const url =
+              data.url +
+              '&paymentMethod=' +
+              paymentMethod +
+              '&redirectUrl=' +
+              redirectUrl +
+              '&failureRedirectUrl=' +
+              failureRedirectUrl;
+            console.log('============= wyre URL2: ', url);
+
             this.openExternalLink(url);
           })
           .catch(err => {
@@ -192,7 +258,7 @@ export class CryptoOffersPage {
     }
   }
 
-  private getWyreQuote(): void {
+  /* private getWyreQuote(): void {
     this.wyreProvider
       .getRates()
       .then((data: any) => {
@@ -208,14 +274,14 @@ export class CryptoOffersPage {
 
             console.log(
               data[this.currency.toUpperCase() + this.coin.toUpperCase()][
-                this.currency.toUpperCase()
+              this.currency.toUpperCase()
               ]
             );
             this.wAmountReceiving = Number(
               this.amount / this.wFiatMoney
             ).toFixed(
               this.currencyProvider.getPrecision(this.coin).unitDecimals
-            );
+              );
             this.logger.debug('Wyre getting quote: SUCCESS');
           } else {
             // show error
@@ -226,6 +292,50 @@ export class CryptoOffersPage {
       .catch(err => {
         // show error
         console.log('--------------------- testRequest() err: ', err);
+      });
+  } */
+
+  private getWyreQuote2(): void {
+    this.walletProvider
+      .getAddress(this.wallet, false)
+      .then(address => {
+        const data = {
+          amount: this.amount.toString(),
+          sourceCurrency: this.currency.toUpperCase(),
+          destCurrency: this.coin.toUpperCase(),
+          dest: 'bitcoin:' + address,
+          country: 'US'
+        };
+
+        this.wyreProvider
+          .walletOrderQuotation(this.wallet, data)
+          .then((data: any) => {
+            if (data) {
+              console.log('--------- WYRE walletOrderQuotation data: ', data);
+
+              this.wFiatMoney =
+                (data.sourceAmount + data.fees[this.coin.toUpperCase()]) /
+                data.destAmount;
+              this.wCryptoRate = data.exchangeRate;
+
+              this.wAmountReceiving = data.destAmount.toFixed(
+                this.currencyProvider.getPrecision(this.coin).unitDecimals
+              );
+
+              this.logger.debug('Wyre getting quote: SUCCESS');
+            } else {
+              // show error
+              console.log('--------------------- testRequest() err2: ');
+            }
+          })
+          .catch(err => {
+            // show error
+            console.log('--------------------- testRequest() err: ', err);
+          });
+      })
+      .catch(err => {
+        // show error
+        console.log('--------------------- testRequest() err2: ', err);
       });
   }
 

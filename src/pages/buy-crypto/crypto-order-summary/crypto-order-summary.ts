@@ -6,6 +6,7 @@ import { Logger } from '../../../providers/logger/logger';
 import { ProfileProvider } from '../../../providers/profile/profile';
 import { SimplexProvider } from '../../../providers/simplex/simplex';
 import { WalletProvider } from '../../../providers/wallet/wallet';
+import { WyreProvider } from '../../../providers/wyre/wyre';
 
 // Pages
 import { CryptoOffersPage } from '../../../pages/buy-crypto/crypto-offers/crypto-offers';
@@ -33,7 +34,8 @@ export class CryptoOrderSummaryPage {
     private simplexProvider: SimplexProvider,
     private navCtrl: NavController,
     private profileProvider: ProfileProvider,
-    private walletProvider: WalletProvider
+    private walletProvider: WalletProvider,
+    private wyreProvider: WyreProvider
   ) {
     this.currencies = this.simplexProvider.supportedCoins;
   }
@@ -52,6 +54,14 @@ export class CryptoOrderSummaryPage {
     this.walletProvider.getAddress(this.wallet, false).then(addr => {
       this.address = addr;
     });
+    this.wyreProvider
+      .getCountries()
+      .then(data => {
+        console.log('----------wyre getCountries data: ', data);
+      })
+      .catch(err => {
+        console.log('----------wyre getCountries err: ', err);
+      });
   }
 
   public openAmountModal() {

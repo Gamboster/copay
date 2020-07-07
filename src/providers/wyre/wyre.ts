@@ -39,7 +39,7 @@ export class WyreProvider {
   }
 
   public getRates() {
-    const url = 'https://api.sendwyre.com/v3/rates';
+    const url = this.uri + '/v3/rates';
     const headers = {
       'Content-Type': 'application/json'
     };
@@ -59,6 +59,47 @@ export class WyreProvider {
     });
   }
 
+  public getCountries() {
+    const url = this.uri + '/v3/widget/countries';
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+
+    return new Promise((resolve, reject) => {
+      this.http.get(url, { headers }).subscribe(
+        data => {
+          return resolve(data);
+        },
+        err => {
+          return reject(err);
+        }
+      );
+    });
+  }
+
+  public getLimits() {
+    const url = this.uri + '/v3/limits';
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+
+    return new Promise((resolve, reject) => {
+      this.http.get(url, { headers }).subscribe(
+        data => {
+          return resolve(data);
+        },
+        err => {
+          return reject(err);
+        }
+      );
+    });
+  }
+
+  public walletOrderQuotation(wallet, data): Promise<any> {
+    data.env = this.env;
+    return wallet.wyreWalletOrderQuotation(data);
+  }
+
   public walletOrderReservation(wallet, data): Promise<any> {
     data.env = this.env;
     return wallet.wyreWalletOrderReservation(data);
@@ -70,6 +111,7 @@ export class WyreProvider {
     };
     return wallet.wyreUrlParams(data);
   }
+
   public getTransfer(transferId: string) {
     const url = this.uri + '/v2/transfer/' + transferId + '/track';
     const headers = {
