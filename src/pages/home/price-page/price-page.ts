@@ -249,7 +249,6 @@ export class PricePage {
   }
 
   private goToAmountPage() {
-    this.analyticsProvider.logEvent('buy_crypto_button_clicked', {});
     this.navCtrl.push(AmountPage, {
       fromBuyCrypto: true,
       nextPage: 'CryptoPaymentMethodPage',

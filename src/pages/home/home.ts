@@ -3,14 +3,9 @@ import { TranslateService } from '@ngx-translate/core';
 import { Events, NavController, Slides } from 'ionic-angular';
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import env from '../../environments';
-import { SelectCurrencyPage } from '../../pages/add/select-currency/select-currency';
-import { AmountPage } from '../../pages/send/amount/amount';
 import { FormatCurrencyPipe } from '../../pipes/format-currency';
 import {
-  ActionSheetProvider,
   AppProvider,
-  ErrorsProvider,
   ExternalLinkProvider,
   FeedbackProvider,
   GiftCardProvider,
@@ -19,7 +14,6 @@ import {
   MerchantProvider,
   PersistenceProvider,
   PlatformProvider,
-  ProfileProvider,
   ReleaseProvider
 } from '../../providers';
 import { AnalyticsProvider } from '../../providers/analytics/analytics';
@@ -34,6 +28,8 @@ import { PhaseOneCardIntro } from '../integrations/bitpay-card/bitpay-card-phase
 import { CoinbasePage } from '../integrations/coinbase/coinbase';
 import { BuyCardPage } from '../integrations/gift-cards/buy-card/buy-card';
 import { CardCatalogPage } from '../integrations/gift-cards/card-catalog/card-catalog';
+
+import { CryptoCoinSelectorPage } from '../../pages/buy-crypto/crypto-coin-selector/crypto-coin-selector';
 
 export interface Advertisement {
   name: string;
@@ -100,10 +96,7 @@ export class HomePage {
     private configProvider: ConfigProvider,
     private events: Events,
     private releaseProvider: ReleaseProvider,
-    private platformProvider: PlatformProvider,
-    private profileProvider: ProfileProvider,
-    private actionSheetProvider: ActionSheetProvider,
-    private errorsProvider: ErrorsProvider
+    private platformProvider: PlatformProvider
   ) {
     this.logger.info('Loaded: HomePage');
     this.zone = new NgZone({ enableLongStackTrace: false });
@@ -495,54 +488,9 @@ export class HomePage {
     this.navCtrl.push(CardCatalogPage);
   }
 
-  public selectWallet() {
-    this.wallets = this.profileProvider.getWallets({
-      network: env.name == 'development' ? null : 'livenet',
-      onlyComplete: true,
-      coin: ['btc', 'bch', 'eth', 'xrp', 'pax', 'busd'],
-      backedUp: true
-    });
-    if (_.isEmpty(this.wallets)) {
-      this.errorsProvider.showNoWalletError(option => {
-        if (option) {
-          this.navCtrl.push(SelectCurrencyPage);
-        }
-      });
-    } else {
-      this.showWallets();
-    }
-  }
-
-  public showWallets(): void {
-    const params = {
-      wallets: this.wallets,
-      selectedWalletId: null,
-      title: this.translate.instant('Select wallet to deposit to')
-    };
-    const walletSelector = this.actionSheetProvider.createWalletSelector(
-      params
-    );
-    walletSelector.present();
-    walletSelector.onDidDismiss(wallet => {
-      this.onWalletSelect(wallet);
-    });
-  }
-
-  private onWalletSelect(wallet): void {
-    if (!_.isEmpty(wallet)) {
-      this.wallet = wallet;
-      this.goToAmountPage();
-    }
-  }
-
-  private goToAmountPage() {
+  public goToCoinSelector(): void {
     this.analyticsProvider.logEvent('buy_crypto_button_clicked', {});
-    this.navCtrl.push(AmountPage, {
-      fromBuyCrypto: true,
-      nextPage: 'CryptoPaymentMethodPage',
-      walletId: this.wallet.id,
-      currency: this.configProvider.get().wallet.settings.alternativeIsoCode
-    });
+    this.navCtrl.push(CryptoCoinSelectorPage);
   }
 
   private checkNewRelease() {
