@@ -94,10 +94,13 @@ export class TxFormatProvider {
     let settings = this.configProvider.get().wallet.settings;
 
     let val = (() => {
-      var v1 = parseFloat(
-        this.rate.toFiat(satoshis, settings.alternativeIsoCode, coin).toFixed(2)
+      var v1 = this.filter.formatFiatAmount(
+        parseFloat(
+          this.rate
+            .toFiat(satoshis, settings.alternativeIsoCode, coin)
+            .toFixed(2)
+        )
       );
-      v1 = this.filter.formatFiatAmount(v1);
       if (!v1) return null;
 
       return v1 + ' ' + settings.alternativeIsoCode;

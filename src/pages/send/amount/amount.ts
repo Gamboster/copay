@@ -65,8 +65,8 @@ export class AmountPage {
   public onlyIntegers: boolean;
   public alternativeUnit: string;
   public globalResult: string;
-  public alternativeAmount;
-  public expression;
+  public alternativeAmount: string;
+  public expression: string;
   public amount;
 
   public showSendMax: boolean;
@@ -130,7 +130,7 @@ export class AmountPage {
     private translate: TranslateService
   ) {
     this.zone = new NgZone({ enableLongStackTrace: false });
-    this.wallet = this.profileProvider.getWallet(this.navParams.data.walletId);
+    // this.wallet = this.profileProvider.getWallet(this.navParams.data.walletId);
     this.config = this.configProvider.get();
     this.useAsModal = this.navParams.data.useAsModal;
     this.recipientType = this.navParams.data.recipientType;
@@ -157,6 +157,7 @@ export class AmountPage {
 
     this.availableUnits = [];
     this.expression = '';
+    this.navParams.data.wallet = null;
 
     this.LENGTH_EXPRESSION_LIMIT = 19;
     this.amount = 0;
@@ -257,8 +258,10 @@ export class AmountPage {
 
     this.unitIndex = 0;
 
+    this.navParams.data.coin = 'btc,bch,eth';
     if (this.navParams.data.coin) {
       let coins = this.navParams.data.coin.split(',');
+      console.log('\\\\\\\\\\\\\\\\\\\\ coins: ', coins);
       let newAvailableUnits = [];
 
       _.each(coins, (c: string) => {
@@ -362,8 +365,8 @@ export class AmountPage {
     );
     this.zone.run(() => {
       this.expression = this.availableUnits[this.unitIndex].isFiat
-        ? this.toFiat(maxAmount, this.wallet.coin).toFixed(2)
-        : maxAmount;
+        ? this.toFiat(maxAmount, this.wallet.coin).toFixed(2).toString()
+        : maxAmount.toString();
       this.processAmount();
       this.changeDetectorRef.detectChanges();
       this.finish();
@@ -438,12 +441,36 @@ export class AmountPage {
     return _.isNumber(expression) ? true : false;
   }
 
-  private processAmount(): void {
-    let formatedValue = this.format(this.expression);
-    let result = this.evaluate(formatedValue);
+  private processAmount(changedUnit?): void {
+    console.log('======== processAmount changedUnit: ', changedUnit);
+    console.log('======== processAmount this.expression: ', this.expression);
+    let formatedValue: string = this.format(this.expression);
+    let result: number = this.evaluate(formatedValue);
+    console.log('======== processAmount formatedValue: ', formatedValue);
+    console.log('======== processAmount result: ', result);
+    console.log(
+      '======== processAmount this.alternativeAmount: ',
+      this.alternativeAmount
+    );
+
     this.allowSend = this.onlyIntegers
       ? _.isNumber(result) && +result > 0 && Number.isInteger(+result)
       : _.isNumber(result) && +result > 0;
+
+    if (changedUnit) {
+      if (
+        !this.alternativeAmount ||
+        this.alternativeAmount == '0' ||
+        this.alternativeAmount == '0.00'
+      ) {
+        this.resetValues();
+      } else {
+        // const savedValue = _.cloneDeep(this.expression);
+        this.expression = this.alternativeAmount.replace(/,/g, '');
+        this.alternativeAmount = result.toString();
+        return;
+      }
+    }
 
     if (_.isNumber(result)) {
       this.globalResult = this.isExpression(this.expression)
@@ -460,6 +487,10 @@ export class AmountPage {
             a * this.unitToSatoshi,
             true
           );
+          console.log(
+            '%%%%%%%%%% this.alternativeAmount1: ',
+            this.alternativeAmount
+          );
           this.checkAmountForBitpaycard(result);
         } else {
           this.alternativeAmount = result ? 'N/A' : null;
@@ -468,6 +499,10 @@ export class AmountPage {
       } else {
         this.alternativeAmount = this.filterProvider.formatFiatAmount(
           this.toFiat(result)
+        );
+        console.log(
+          '%%%%%%%%%% this.alternativeAmount2: ',
+          this.alternativeAmount
         );
         this.checkAmountForBitpaycard(this.toFiat(result));
       }
@@ -485,7 +520,7 @@ export class AmountPage {
 
   private processResult(val): number {
     if (this.availableUnits[this.unitIndex].isFiat)
-      return this.filterProvider.formatFiatAmount(val);
+      return +this.filterProvider.formatFiatAmount(val);
     else
       return this.txFormatProvider.formatAmount(
         this.unit.toLowerCase(),
@@ -511,6 +546,14 @@ export class AmountPage {
       )
     )
       return undefined;
+
+    console.log('$$$$$$$$$ this.unitToSatoshi: ', this.unitToSatoshi);
+    console.log('$$$$$$$$$ this.fiatCode: ', this.fiatCode);
+    console.log('$$$$$$$$$ coin: ', coin);
+    console.log(
+      '$$$$$$$$$ this.availableUnits[this.unitIndex].id: ',
+      this.availableUnits[this.unitIndex].id
+    );
 
     return parseFloat(
       this.rateProvider
@@ -666,7 +709,7 @@ export class AmountPage {
     sheet.onDidDismiss(ok => ok && this.finish(true));
   }
 
-  private updateUnitUI(): void {
+  private updateUnitUI(changedUnit?): void {
     this.unit = this.fromBuyCrypto
       ? this.altCurrencyInitial
       : this.availableUnits[this.unitIndex].shortName;
@@ -680,7 +723,7 @@ export class AmountPage {
     this.unitToSatoshi = unitToSatoshi;
     this.satToUnit = 1 / this.unitToSatoshi;
     this.unitDecimals = unitDecimals;
-    this.processAmount();
+    this.processAmount(changedUnit);
     this.logger.debug(
       'Update unit coin @amount unit:' +
         this.unit +
@@ -690,12 +733,17 @@ export class AmountPage {
   }
 
   private resetValues(): void {
+    console.log('---------- this.expression: ', this.expression);
+    console.log('---------- this.globalResult: ', this.globalResult);
+    console.log('---------- this.alternativeAmount: ', this.alternativeAmount);
+
     this.expression = '';
     this.globalResult = '';
     this.alternativeAmount = null;
   }
 
   public changeUnit(): void {
+    console.log('---------- this.availableUnits: ', this.availableUnits);
     if (this.fixedUnit) return;
 
     this.unitIndex++;
@@ -710,10 +758,8 @@ export class AmountPage {
       });
     }
 
-    this.resetValues();
-
     this.zone.run(() => {
-      this.updateUnitUI();
+      this.updateUnitUI(true);
       this.changeDetectorRef.detectChanges();
     });
   }

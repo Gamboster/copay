@@ -31,8 +31,6 @@ describe('AmountPage', () => {
       testBed = testEnv.testBed;
       fixture.detectChanges();
       rateProvider = testBed.get(RateProvider);
-      spyOn(rateProvider, 'getRate').and.returnValue(1000000);
-      toFiatSpy = spyOn(rateProvider, 'toFiat').and.returnValue(1000000);
     });
   }));
   afterEach(() => {
@@ -40,12 +38,16 @@ describe('AmountPage', () => {
   });
 
   describe('sendMax', () => {
+    beforeEach(() => {
+      spyOn(rateProvider, 'getRate').and.returnValue(1000000);
+      toFiatSpy = spyOn(rateProvider, 'toFiat').and.returnValue(1000000);
+    });
     it('should set the send display value expression to the available balance', () => {
       instance.wallet = wallet;
       instance.ionViewDidLoad();
       instance.sendMax();
       expect(instance.expression).toBe(
-        instance.wallet.cachedStatus.availableBalanceSat / 1e8
+        (instance.wallet.cachedStatus.availableBalanceSat / 1e8).toString()
       );
     });
 
@@ -64,6 +66,77 @@ describe('AmountPage', () => {
       const finishSpy = spyOn(instance, 'finish');
       instance.sendMax();
       expect(finishSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('changeUnit', () => {
+    it('should set default values before call changeUnit for the first time', () => {
+      instance.wallet = wallet;
+      spyOn(rateProvider, 'getRate').and.returnValue(0);
+      spyOn(rateProvider, 'toFiat').and.returnValue(0);
+      instance.ionViewDidLoad();
+      instance.fiatCode = 'USD';
+
+      expect(instance.availableUnits.length).toBe(2);
+      expect(instance.availableUnits[0].id).toBe('bch');
+      expect(instance.availableUnits[1].id).toBe('USD');
+      expect(instance.unit).toBe('BCH');
+      expect(instance.expression).toBe('');
+      expect(instance.alternativeAmount).toBe('0');
+      expect(instance.globalResult).toBe('');
+    });
+
+    it('should change selected unit if it is changed without enter any amount value', () => {
+      instance.wallet = wallet;
+      spyOn(rateProvider, 'getRate').and.returnValue(0);
+      spyOn(rateProvider, 'toFiat').and.returnValue(0);
+      instance.ionViewDidLoad();
+      instance.fiatCode = 'USD';
+      instance.changeUnit();
+
+      expect(instance.availableUnits.length).toBe(2);
+      expect(instance.availableUnits[0].id).toBe('bch');
+      expect(instance.availableUnits[1].id).toBe('USD');
+      expect(instance.unit).toBe('USD');
+      expect(instance.expression).toBe('');
+      expect(instance.alternativeAmount).toBeNull();
+      expect(instance.globalResult).toBe('');
+    });
+
+    it('should change selected unit if it is changed after enter a simple value', () => {
+      instance.wallet = wallet;
+      instance.expression = '100';
+      spyOn(rateProvider, 'getRate').and.returnValue(1234567.89);
+      spyOn(rateProvider, 'toFiat').and.returnValue(345345.34);
+      instance.ionViewDidLoad();
+      instance.fiatCode = 'USD';
+      instance.changeUnit();
+
+      expect(instance.availableUnits.length).toBe(2);
+      expect(instance.availableUnits[0].id).toBe('bch');
+      expect(instance.availableUnits[1].id).toBe('USD');
+      expect(instance.unit).toBe('USD');
+      expect(instance.expression).toBe('345345.34');
+      expect(instance.alternativeAmount).toBe('100');
+      expect(instance.globalResult).toBe('');
+    });
+
+    it('should change selected unit if it is changed after enter an expression', () => {
+      instance.wallet = wallet;
+      instance.expression = '100+50*2';
+      spyOn(rateProvider, 'getRate').and.returnValue(1234567.89);
+      spyOn(rateProvider, 'toFiat').and.returnValue(345345.34);
+      instance.ionViewDidLoad();
+      instance.fiatCode = 'USD';
+      instance.changeUnit();
+
+      expect(instance.availableUnits.length).toBe(2);
+      expect(instance.availableUnits[0].id).toBe('bch');
+      expect(instance.availableUnits[1].id).toBe('USD');
+      expect(instance.unit).toBe('USD');
+      expect(instance.expression).toBe('345345.34');
+      expect(instance.alternativeAmount).toBe('200');
+      expect(instance.globalResult).toBe('');
     });
   });
 });
